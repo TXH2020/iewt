@@ -1,15 +1,14 @@
 IEWT(Interactive Embedded Web Terminal)
 ------------------------------------------
 
-iewt uses SSH to connect to a remote machine running a Linux OS. It then produces an interactive terminal session upon which the user can execute any command. iewt records the return code as well as the execution time of the entered commands. All these functionalities are available to the user through a web interface. Hence it provides:
+This release provides approximate execution time(as opposed to the previous versions which gave exact time). The small sacrifice made in the accuracy of measurement of the execution time gives a lot of benefits in return because:
 
-- The ability to connect to any remote machine.
-- A terminal on a web browser where the user can directly execute commands.
-- A simple input field to enter commands which are executed on the terminal upon a button click. 
-- An automatically executed command is monitored for its status(success or failure) and completion time. Hence the user can easily analyze the command.
-- Suppose there is an event that reloads the webpage. Web terminals and the commands that run in them are usually lost. iewt is not exception. The terminal is lost. However if the commands do not pause for some reason(eg. user input) and are bound to terminate without user intervention(for eg.,ping command doesnt terminate until user presses Ctrl+C), then iewt waits for them to complete, records them and displays the results to the user. This has been made possible using MySQL to record the commands and WebSockets to query the database for results until they are found.
-- Prevents user from sending commands for execution when there already is a command executing in the terminal.
-- Logging is performed on the browser console and on the server side. Also all the sessions are recorded in a log file(log.txt).
+- it allows us to execute commands like cd which changes the directory of the embedded terminal which want possible before.
+- it allow us to retain environment variables of the terminal session.
+- the time command was used to measure the exact execution time. This made the application somewhat specific to a Linux OS. However, with the removal of time command, the application can now connect to a wider variety of machines. The only requirement is a Unix based OS(Linux, MacOS etc).
+- An additional feature for local storage clearance(only in case of error) has been provided. 
+- Logging has been improved. 
+- a special treatment of script(used to log terminal sessions) command has been made so that the system does not await the status of script command and hence only execute the command and not provide the status. This means that the script command can now be executed from the input.
 
 Installation:
 ----------------
@@ -18,7 +17,7 @@ Installation:
 - For enabling the feature related to command execution during event reload, install and run MySQL with username root and no password. To setup the database with the table, use the database script setup.sql provided in the GitHub repo of this project(https://github.com/TXH2020/iewt).
 - To test the application you need to have
 
-  1. A computer/VM with a Linux OS.
+  1. A computer/VM with a Unix(Linux, MacOS etc.) OS.
   2. SSH server running on the computer/VM.
   3. Network access to the SSH server.
 

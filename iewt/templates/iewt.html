@@ -3,12 +3,12 @@
 <link href="static/img/favicon.png" rel="icon" type="image/png">
 <title> IEWT </title>
 <style>
-#terminal{
-/*width: 500px;
-height:500px;
+#clear{
 position:absolute;
-left:500px;
-top:500px;*/
+top:60px;
+right:0px;
+}
+#terminal{
 position:absolute;
 bottom:0px;
 height:300px;
@@ -17,9 +17,6 @@ resize:both;
 overflow:auto;
 }
 </style>
-<!--Interactive JS library
-<script src="https://cdn.jsdelivr.net/gh/interactiveJS/interactiveJS@v2.0.1/src/interactive.min.js"></script>
-<link href="https://cdn.jsdelivr.net/gh/interactiveJS/interactiveJS@v2.0.1/src/css/interactive.min.css" rel="stylesheet"/>-->
 </head>
 <body>
 
@@ -35,20 +32,15 @@ Fill the form(for the remote machine's SSH credentials) at the bottom of the pag
   <input id="Time" type="text" placeholder="completion time" readonly/>
   <input id="command_id" type="text" placeholder="command id"readonly/>
 </div>
+<div id="clear">
+Yellow button is to be used only when button input is disabled due to some error.<br>
+<button onclick="clear_storage()" style="background-color:yellow">CLEAR PENDING COMMAND</button>
+</div>
 
 <div id="terminal">
-<!--To obtain the form page and enter ssh credentials
-http://localhost:8888-->
-<!--To bypass form if credentials are already known.Make sure password is entered in Base64 form. To obtain base64 form use the following command:
-echo -n 'password' | base64
-http://localhost:8888?hostname=<hostname>&&username=<username>&&password=<base_64_encoded>-->
 <iframe id="myFrame" src="index" style="width:100%; height:100%;"></iframe>
 </div>
 </body>
-<!--add resizable, closeable, maximizable and minimizable features through InteractiveJS Javascript library-->
-<script>
-      //interactive('terminal');
-</script>
 <script>
 //script to send command to the iframe.
   var button = document.querySelector("#sendMessage");
@@ -118,6 +110,15 @@ else
 document.getElementById("CES").style.background='red';
     socket.close()
 });
+}
+</script>
+<script>
+//to clear session storage in case of error. This makes it convenient for the user to enable button input instead of manually clearing session storage
+function clear_storage(){
+sessionStorage.command_state=0;
+//since the terminal is in an error state, reload the iframe to obtain a fresh terminal.
+const iframe = document.querySelector("iframe");
+iframe.contentWindow.location.reload();
 }
 </script>
 </html>

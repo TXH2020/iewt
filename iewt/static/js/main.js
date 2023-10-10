@@ -413,21 +413,6 @@ jQuery(function($){
     //function to extract command status and execution time sent by the server and send it to the iframe
     function get_time_status(text){
       var command_output=null;
-      /*
-        var t=text.toString();
-        if(t.search("COMMAND_EXECUTION!@#")!=-1){
-        this.flag=1;
-        }
-        var pos1=t.search('real');
-        if(pos1!=-1 && this.flag==1){
-        var beg=pos1+5;
-        var sub=t.substring(beg);
-        var end=sub.search('s');
-        execution_time+=t.substring(beg,beg+end+1);}
-        var pos=t.search('Command_Execution_Status:');
-        if(pos!=-1 && this.flag===1){
-          command_execution_status+=t.substring(pos+25,pos+26);
-          this.flag=0;}*/
           var t=text.toString();
           var pos1=t.search(";!@#");
           var pos2=t.search("#@!;");
@@ -436,7 +421,7 @@ jQuery(function($){
           }
           if(command_output!=null){
           this.flag=1;
-          console.log(command_output.Execution_Time+"ffff"+command_output.Command_Execution_Status);
+          console.log("Command_Execution_Time:"+command_output.Execution_Time+" Command Execution Status:"+command_output.Command_Execution_Status);
           $('#command_output_data').val(JSON.stringify(command_output));
           $('#b2').click();
         }
@@ -465,8 +450,8 @@ jQuery(function($){
 function execute_command() {
   var x=document.getElementById('command_data').value
   console.log("command:"+x);
-  var command="echo 'COMMAND_OUTPUT!@#\n';time (";
-  command+=x+");echo '\nCommand_Execution_Status:'$?\n"
+  var command="";
+  command+="!@#abc123"+x+";echo 'Command_Execution_Status:'$?\n"
   try{
   sock.send(JSON.stringify({'data': command}));}
   catch(err){

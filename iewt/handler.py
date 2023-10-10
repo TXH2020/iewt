@@ -663,28 +663,37 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
                 worker.chan.resize_pty(*resize)
             except (TypeError, struct.error, paramiko.SSHException):
                 pass
-
+        #the special commands are ones that we can just execute and not wait for its status.
+        special_commands=['script']
         data = msg.get('data')
         if data and isinstance(data, UnicodeType):
             #use regular expressions to search for command inserted into the terminal
-            match_object=re.search("echo 'COMMAND_OUTPUT!@#",data)
+            match_object=re.search("!@#abc123",data)
             if(match_object):
-                match_object1=re.search(";time",data)
-                match_object2=re.search(";echo",data)
-                if(match_object1 and match_object2):
+                data=data[match_object.start()+9:]
+                match_object2=re.search(";echo 'Command_",data)
+                if(match_object2):
                     #tell the worker that a command has arrived
-                    worker.input_command.append(data[match_object1.start()+7:match_object2.start()-1])
+                    worker.input_command.append(data[:match_object2.start()])
+                    for i in special_commands:
+                        x=re.search(i,data[:match_object2.start()])
+                        if(x):
+                            if(x.start()==0):
+                                data=data[:match_object2.start()]+"\n"
+                                worker.input_command.pop(0)
+                                break
+                    else:
                     #tell the worker that time at which command has arrived
-                    worker.timestamp.append(datetime.now())
+                        worker.entry_timestamp.append(datetime.now())
                     #create a unique identifier for every command
-                    uid='CID'
-                    for i in range(10):
-                        uid=uid+str(random.randint(0,9))
-                    for i in range(3):
-                        uid=uid+random.choice(string.ascii_letters).upper()
-                    worker.command_ids.append(uid)
-                    worker.push_command_id()
-                    logging.info("Command recieved")
+                        uid='CID'
+                        for i in range(10):
+                            uid=uid+str(random.randint(0,9))
+                        for i in range(3):
+                            uid=uid+random.choice(string.ascii_letters).upper()
+                        worker.command_ids.append(uid)
+                        worker.push_command_id()
+                        logging.info("Command recieved")
                     
             worker.data_to_dst.append(data)
             worker.on_write()
@@ -696,7 +705,7 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
         worker = self.worker_ref() if self.worker_ref else None
         if worker:
             worker.close(reason=self.close_reason)
-            
+
 class IEWTHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('iewt.html')

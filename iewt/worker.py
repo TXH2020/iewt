@@ -10,6 +10,7 @@ from tornado.iostream import _ERRNO_CONNRESET
 from tornado.util import errno_from_exception
 #additional libraries
 import mysql.connector as my
+from datetime import datetime
 import re
 BUF_SIZE = 32 * 1024
 clients = {}  # {ip: {id: worker}}
@@ -46,14 +47,9 @@ class Worker(object):
         self.mode = IOLoop.READ
         self.closed = False
         #the variables defined below are for various purposes. To add one, simpy write self.<variable_name>
-        self.coflag=0
-        self.timeflag1=0
-        self.timeflag2=0
-        self.temp=0
-        self.temp_time_storage=""
         self.input_command=[]
         self.command_ids=[]
-        self.timestamp=[]
+        self.entry_timestamp=[]
         self.session_close_flag=1
         self.cnx=None
         self.mysqlcon_status=0
@@ -74,59 +70,16 @@ class Worker(object):
             
     #to extract the command execution status and time taken to execute the comand
     def get_time_status(self,text):
-        execution_time=''
         command_execution_status=''
+        execution_time=''
         t=text.decode()
-        if(self.temp==1):
-            self.temp=self.temp+1
-        #co,ro,so,cst are match objects
-        #r,c are indices for 'real' and 'Command_Execution_Status:' respectively
-        co=re.search("COMMAND_OUTPUT!@#",t)
-        if(co):
-            self.coflag=1
-        if(self.coflag==1):
-            ro=re.search('real',t)
-            r=-1
-            if(ro):
-                logging.info("Command time recieved")
-                self.temp=1
-                self.timeflag1=1
-                r=ro.start()
-            try:
-                if(self.timeflag1==1):
-                    tstart,tend=-1,-1
-                    if(self.temp==1):
-                        tstart=re.search('\d+\.\d+',t[r:]).start()
-                        tend=re.search('s',t[r:]).start()
-                        execution_time=execution_time+t[r:][tstart:tend+1]
-                    else:
-                        tstart=re.search('\d+\.\d+',t).start()
-                        tend=re.search('s',t).start()
-                        execution_time=execution_time+t[tstart:tend+1]
-                    self.timeflag1=0
-                    self.timeflag2=1
-                    self.temp_time_storage=execution_time
-            except:
-                    pass
-            c=-1
-            if(self.timeflag2==1):
-                try:
-                    if(self.temp==1):
-                        c=re.search('Command_Execution_Status:',t[r:]).start()
-                        cstring=t[r:][c:].split(':')[1].rstrip('\r')
-                        cst=re.search('[0-9]{1,3}',cstring)
-                        command_execution_status=command_execution_status+cstring[cst.start():cst.end()]
-                    else:
-                        c=re.search('Command_Execution_Status:',t).start()
-                        cstring=t[c:].split(':')[1].rstrip('\r')
-                        cst=re.search('[0-9]{1,3}',cstring)
-                        command_execution_status=command_execution_status+cstring[cst.start():cst.end()]
-                    self.temp=0
-                    self.coflag=0
-                    self.timeflag2=0
-                    execution_time=self.temp_time_storage
-                except:
-                    pass
+        cst=re.search('Command_Execution_Status:[0-9]{1,3}',t)
+        if(cst and len(self.entry_timestamp)!=0):
+            exit_time=datetime.now()
+            execution_time=execution_time+str(round((exit_time-self.entry_timestamp[0]).total_seconds(),2))+"s"
+            colon_pos=re.search(":",t[cst.start():cst.end()]).start()
+            command_execution_status=command_execution_status+t[cst.start()+colon_pos+1:cst.end()]
+            logging.info("Command status and time recieved")
         return command_execution_status,execution_time
     
     #To pass command id to the client
@@ -144,7 +97,7 @@ class Worker(object):
            add_command = ("INSERT INTO command_table"
                 "(Command_ID,Command,Command_Execution_Status,Execution_Time,Timestamp)"
                  "VALUES (%s, %s, %s, %s,%s)")
-           command=(self.command_ids[0],self.input_command[0],command_execution_status,execution_time,self.timestamp[0])
+           command=(self.command_ids[0],self.input_command[0],command_execution_status,execution_time,self.entry_timestamp[0])
            try:
                 cr.execute(add_command,command)
                 logging.info("record was successfully inserted")
@@ -201,7 +154,7 @@ class Worker(object):
                         self.clean_up("client disconnected")
                     logging.info("Command:"+self.input_command[0]+",Command_ID:"+self.command_ids[0]+",Command Status:"+
                                  command_execution_status+",Execution time:"+execution_time+
-                                 ",Timestamp:"+str(self.timestamp[0]))
+                                 ",Timestamp:"+str(self.entry_timestamp[0]))
                     #Insert command information into database
                     if(self.mysqlcon_status==1 and len(self.input_command)!=0):
                         self.insert_command(command_execution_status,execution_time)
@@ -212,7 +165,7 @@ class Worker(object):
                     #To clear inserted command to enable entry of next
                     self.input_command.pop(0)
                     self.command_ids.pop(0)
-                    self.timestamp.pop(0)
+                    self.entry_timestamp.pop(0)
                 self.handler.write_message(data, binary=True)
             except tornado.websocket.WebSocketClosedError:
                 self.close(reason='websocket closed')
