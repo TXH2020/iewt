@@ -1,0 +1,123 @@
+<html>
+<head>
+<link href="static/img/favicon.png" rel="icon" type="image/png">
+<title> IEWT </title>
+<style>
+#terminal{
+/*width: 500px;
+height:500px;
+position:absolute;
+left:500px;
+top:500px;*/
+position:absolute;
+bottom:0px;
+height:300px;
+width:100%;
+resize:both;
+overflow:auto;
+}
+</style>
+<!--Interactive JS library
+<script src="https://cdn.jsdelivr.net/gh/interactiveJS/interactiveJS@v2.0.1/src/interactive.min.js"></script>
+<link href="https://cdn.jsdelivr.net/gh/interactiveJS/interactiveJS@v2.0.1/src/css/interactive.min.css" rel="stylesheet"/>-->
+</head>
+<body>
+
+<!--The div 'app' is a div that contains mechanisms to:
+1. Type input command and send it to the iframe
+2. Display the command status, time and command id for the entered command
+-->
+<div id="app">
+Fill the form(for the remote machine's SSH credentials) at the bottom of the page to get the terminal.<hr>
+  Enter the command here:<input id="message" type="text" />
+  <button id="sendMessage">Send Message</button><br>
+  <button id="CES">Command Execution Status</button><br>
+  <input id="Time" type="text" placeholder="completion time" readonly/>
+  <input id="command_id" type="text" placeholder="command id"readonly/>
+</div>
+
+<div id="terminal">
+<!--To obtain the form page and enter ssh credentials
+http://localhost:8888-->
+<!--To bypass form if credentials are already known.Make sure password is entered in Base64 form. To obtain base64 form use the following command:
+echo -n 'password' | base64
+http://localhost:8888?hostname=<hostname>&&username=<username>&&password=<base_64_encoded>-->
+<iframe id="myFrame" src="index" style="width:100%; height:100%;"></iframe>
+</div>
+</body>
+<!--add resizable, closeable, maximizable and minimizable features through InteractiveJS Javascript library-->
+<script>
+      //interactive('terminal');
+</script>
+<script>
+//script to send command to the iframe.
+  var button = document.querySelector("#sendMessage");
+  function sendMessage() {
+  if(sessionStorage.command_state==='1'){
+  alert("You have a command running in the terminal. Please wait for its completion. You can open a new tab for entering commands if needed");}
+  else{
+    const message = document.querySelector("#message").value;
+    if(message.search('\\S')===-1)
+    alert("Empty command. Please enter a valid command");
+    else{
+    const iframe = document.querySelector("iframe");
+    iframe.contentWindow.postMessage(message, "*");}}
+  }
+  button.addEventListener("click", sendMessage);
+</script>
+<script>
+//script to display messages recieved from iframe.
+//Note that we store command ID in the session storage
+//We also store a special variable called command state with value 1 in the session storage
+  window.addEventListener('message', function(event) {
+  var x=JSON.parse(event.data);
+  if(x!=null){
+  if(Object.keys(x).length===1){
+  console.log("Command ID received from the child: " + x.Command_ID);
+  document.getElementById("command_id").value=x.Command_ID;
+  sessionStorage.Command_ID=x.Command_ID
+  sessionStorage.command_state=1
+  }
+//to display command status and time. When we recieve them, we set command state as 0.
+  else if(Object.keys(x).length===2){
+    console.log("Message received from the child: " + x.Command_Execution_Status+x.Execution_Time);
+    document.getElementById("Time").value=x.Execution_Time;
+    sessionStorage.command_state=0    
+    if(x.Command_Execution_Status==='0')
+document.getElementById("CES").style.background='green';
+else
+document.getElementById("CES").style.background='red';
+}
+}
+  });
+</script>
+<script>
+/*to deal with reload events when a command is yet to be executed in the terminal;
+1. check if there is a page reload event
+2. check if there is such a command which we have sent for execution but havent recieved its status and time. For this we check
+i. If session storage has a command id
+ii. If session state is 1
+3. If conditions 1 and 2 are true then we open a websocket connection with the server and then
+i. Send the command id whose value is in session storage to the server
+ii. Wait for the server to send the status and time of the command
+iii. When command status and time are recieved, then set session state as 0 and display the status and time*/
+
+if(document.readyState!="complete" && sessionStorage.Command_ID!=null && sessionStorage.command_state==='1'){
+console.log("Websocket for pending command activated");
+const socket = new WebSocket('ws://localhost:8888/sql/');
+socket.addEventListener('open', function (event) {
+    socket.send(sessionStorage.Command_ID);
+});
+socket.addEventListener('message', function (event) {
+var x=JSON.parse(event.data)
+document.getElementById("Time").value=x.Execution_Time;
+sessionStorage.command_state=0
+if(x.Command_Execution_Status==='0')
+document.getElementById("CES").style.background='green';
+else
+document.getElementById("CES").style.background='red';
+    socket.close()
+});
+}
+</script>
+</html>
