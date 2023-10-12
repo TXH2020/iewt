@@ -9,11 +9,19 @@ from tornado.ioloop import IOLoop
 from tornado.iostream import _ERRNO_CONNRESET
 from tornado.util import errno_from_exception
 #additional libraries
-import mysql.connector as my
+import requests
 from datetime import datetime
 import re
+import os
+
 BUF_SIZE = 32 * 1024
 clients = {}  # {ip: {id: worker}}
+
+#For logging terminal sessions
+current_dir=os.getcwd()
+if(os.path.exists(os.path.join(current_dir,'logs'))==False):
+   os.mkdir('logs')
+log_directory=os.path.join(current_dir,'logs')
 
 def clear_worker(worker, clients):
     ip = worker.src_addr[0]
@@ -47,17 +55,20 @@ class Worker(object):
         self.mode = IOLoop.READ
         self.closed = False
         #the variables defined below are for various purposes. To add one, simpy write self.<variable_name>
-        self.input_command=[]
-        self.command_ids=[]
-        self.entry_timestamp=[]
-        self.session_close_flag=1
-        self.cnx=None
-        self.mysqlcon_status=0
+        self.input_command=None
+        self.command_id=None
+        self.entry_timestamp=None
+        self.conn=None
+        self.conn_status=0
+        self.search_id=None
+        self.search_bit=0
+        self.search_command=None
         
         try:
-            self.cnx=my.connect(user="root",host="localhost",password="")
-            self.mysqlcon_status=1
-        except my.Error as e:
+            self.conn=requests.Session()
+            self.conn.get('http://localhost:5000/test')
+            self.conn_status=1
+        except Exception as e:
             logging.info(e)
 
     def __call__(self, fd, events):
@@ -73,38 +84,31 @@ class Worker(object):
         command_execution_status=''
         execution_time=''
         t=text.decode()
-        cst=re.search('Command_Execution_Status:[0-9]{1,3}',t)
-        if(cst and len(self.entry_timestamp)!=0):
+        cst=re.search('Command_Execution_Status=[0-9]{1,3}',t)
+        search_text_match=None
+        if(self.search_id):
+            try:
+                search_text_match=re.search(self.search_id+':'+'Command_Execution_Status=[0-9]{1,3}',t)
+                if(search_text_match):
+                    self.search_bit=1
+            except:
+                pass
+        if((cst and self.input_command) or self.search_bit==1):
             exit_time=datetime.now()
-            execution_time=execution_time+str(round((exit_time-self.entry_timestamp[0]).total_seconds(),2))+"s"
-            colon_pos=re.search(":",t[cst.start():cst.end()]).start()
-            command_execution_status=command_execution_status+t[cst.start()+colon_pos+1:cst.end()]
+            if(self.search_bit==1):
+                cst=search_text_match
+            execution_time=execution_time+str(round((exit_time-self.entry_timestamp).total_seconds(),2))+"s"
+            equal_pos=re.search("=",t[cst.start():cst.end()]).start()
+            command_execution_status+=t[cst.start()+equal_pos+1:cst.end()]
             logging.info("Command status and time recieved")
         return command_execution_status,execution_time
-    
-    #To pass command id to the client
-    def push_command_id(self):
-       if(len(self.input_command)!=0):
-        try:
-            res=bytes("!@#Command_ID:"+self.command_ids[0], 'utf-8')
-            self.handler.write_message(res, binary=True)
-        except:
-            self.close(reason='websocket closed')
             
-    def insert_command(self,command_execution_status,execution_time):
-           cr=self.cnx.cursor(buffered=True)
-           cr.execute("use command_database")
-           add_command = ("INSERT INTO command_table"
-                "(Command_ID,Command,Command_Execution_Status,Execution_Time,Timestamp)"
-                 "VALUES (%s, %s, %s, %s,%s)")
-           command=(self.command_ids[0],self.input_command[0],command_execution_status,execution_time,self.entry_timestamp[0])
+    def send_command(self,command_execution_status,execution_time):
            try:
-                cr.execute(add_command,command)
-                logging.info("record was successfully inserted")
-           except Exception as e:
-                logging.info(e)
-           try:
-               self.cnx.commit()
+                data={"session_id":self.id,"command_id":self.command_id,"command":self.input_command,"command_Execution_Status"
+                      :command_execution_status,"execution_Time":execution_time,"timestamp":str(self.entry_timestamp)}
+                self.conn.post("http://localhost:5000/command",json=data)
+                logging.info("record sent successfully")
            except Exception as e:
                logging.info(e)
     
@@ -128,7 +132,7 @@ class Worker(object):
         try:
             data = self.chan.recv(BUF_SIZE)
             #for logging terminal session into a log file. It is stored where we invoke the server
-            with open('log.txt','ab') as f:
+            with open(os.path.join(log_directory,self.id+'.log'),'ab') as f:
                 f.write(data)
             #obtain command execution status and time
             command_execution_status,execution_time=self.get_time_status(data)
@@ -145,27 +149,27 @@ class Worker(object):
             logging.debug('{!r} to {}:{}'.format(data, *self.handler.src_addr))
             try:
                 #if we have obtained status and time for an inserted command.
-                if(command_execution_status and execution_time and len(self.input_command)!=0):
-                    if(self.session_close_flag==0):
-                        self.session_close_flag=1
-                        self.insert_command(command_execution_status,execution_time)
-                        self.mysqlcon_status=0
-                        self.cnx.close()
-                        self.clean_up("client disconnected")
-                    logging.info("Command:"+self.input_command[0]+",Command_ID:"+self.command_ids[0]+",Command Status:"+
-                                 command_execution_status+",Execution time:"+execution_time+
-                                 ",Timestamp:"+str(self.entry_timestamp[0]))
-                    #Insert command information into database
-                    if(self.mysqlcon_status==1 and len(self.input_command)!=0):
-                        self.insert_command(command_execution_status,execution_time)
-                    test_string=';!@#{"Command_Execution_Status":"'+command_execution_status+'","Execution_Time":"'+execution_time+'"}#@!;'
-                    res = bytes(test_string, 'utf-8')
+                if(command_execution_status and execution_time and (self.input_command or self.search_bit==1)):
+                    result_string=';!@#{"Command_Execution_Status":"'+command_execution_status+'","Execution_Time":"'+execution_time+'"}#@!;'
+                    res = bytes(result_string, 'utf-8')
                     #To send status and time back to client
                     self.handler.write_message(res, binary=True)
+                    #If it is not search mode only then log and send to db service
+                    if(self.search_bit==1):
+                        self.input_command=self.search_command
+                        self.command_id=self.search_id
+                        self.search_bit=0
+                        self.search_id=None
+                    logging.info("Command ID:"+self.command_id+",Command:"+self.input_command+",Command Status:"+
+                                 command_execution_status+",Execution time:"+execution_time+
+                                 ",Timestamp:"+str(self.entry_timestamp))
+                    #Send command to database service.
+                    if(self.conn_status==1):
+                        self.send_command(command_execution_status,execution_time)
                     #To clear inserted command to enable entry of next
-                    self.input_command.pop(0)
-                    self.command_ids.pop(0)
-                    self.entry_timestamp.pop(0)
+                    self.input_command=None
+                    self.entry_timestamp=None
+                    self.command_id=None
                 self.handler.write_message(data, binary=True)
             except tornado.websocket.WebSocketClosedError:
                 self.close(reason='websocket closed')
@@ -195,35 +199,24 @@ class Worker(object):
             else:
                 self.update_handler(IOLoop.READ)
     
-    #perform cleanup operations
-    def clean_up(self,reason):
+        
+    def close(self, reason=None):
+        if self.closed:
+            return
         self.closed = True
+
+        logging.info(
+            'Closing worker {} with reason: {}'.format(self.id, reason)
+        )
         if self.handler:
             self.loop.remove_handler(self.fd)
             self.handler.close(reason=reason)
         self.chan.close()
         self.ssh.close()
+        self.conn.close()
+        logging.info('Connection to {}:{} lost'.format(*self.dst_addr))
+
         clear_worker(self, clients)
         logging.debug(clients)
-        
-    def close(self, reason=None):
-        if self.closed:
-            return
-        
-        logging.info(
-            'Closing worker {} with reason: {}'.format(self.id, reason)
-        )
-        #Suppose client has a reload event which causes disconnection but a command was still executing; we havent recieved
-        #the status and time for that command. Hence prevent that session from closing till the command executes successfully
-        #However, the commands are assumed to be those which do ask for parameters from the user.
-        if(reason=="client disconnected" and len(self.input_command)!=0):
-            self.session_close_flag=0
-        else:
-            if(self.session_close_flag==0 and reason=="websocket closed"):
-                pass
-            else:
-                self.clean_up(reason)
-                
-        logging.info('Connection to {}:{} lost'.format(*self.dst_addr))
 
         

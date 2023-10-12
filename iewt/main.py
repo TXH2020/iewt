@@ -4,8 +4,7 @@ import tornado.ioloop
 
 from tornado.options import options
 from iewt import handler
-#import your handlers here. Handlers are used to deal with web requests.
-from iewt.handler import IEWTHandler, IndexHandler, WsockHandler, NotFoundHandler, Websocksql
+from iewt.handler import IEWTHandler, IndexHandler, WsockHandler, NotFoundHandler
 from iewt.settings import (
     get_app_settings,  get_host_keys_settings, get_policy_setting,
     get_ssl_context, get_server_settings, check_encoding_setting
@@ -20,9 +19,7 @@ def make_handlers(loop, options):
         (r'/', IEWTHandler),
         (r'/index', IndexHandler, dict(loop=loop, policy=policy,
                                   host_keys_settings=host_keys_settings)),
-        (r'/index/ws', WsockHandler, dict(loop=loop)),
-        #include a tuple for your handler just like the one below
-         (r'/sql/', Websocksql)
+        (r'/index/ws', WsockHandler, dict(loop=loop))
     ]
     return handlers
 

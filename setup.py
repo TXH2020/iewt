@@ -31,7 +31,7 @@ setup(
         'Programming Language :: Python :: 3.11',
     ],
     install_requires=[
-        'mysql-connector-python',
+        'requests',
         'tornado>=4.5.0',
         'paramiko>=2.3.1',
     ],

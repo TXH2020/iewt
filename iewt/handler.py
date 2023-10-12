@@ -7,31 +7,8 @@ import traceback
 import weakref
 import paramiko
 import tornado.web
-
-#the additional libraries used.
 import re
-import asyncio
-import threading
-import time
-import random
-import string
 from datetime import datetime
-#the code for connection to the command database
-import mysql.connector as my
-
-
-#For querying the database
-def fetch_command_status(command_id,cnx):
-        try:
-            cr=cnx.cursor(buffered=True)
-            cr.execute("use command_database")
-            cr.execute("Select * from command_table where Command_ID='"+command_id+"'")
-            for i in cr:
-                return i
-            return "not found"
-        except Exception as e:
-            raise Exception(e)
-
 from concurrent.futures import ThreadPoolExecutor
 from tornado.ioloop import IOLoop
 from tornado.options import options
@@ -469,7 +446,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
         logging.warning('Could not detect the default encoding.')
         return 'utf-8'
-
+            
     def ssh_connect(self, args):
         ssh = self.ssh_client
         dst_addr = args[:2]
@@ -485,7 +462,11 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
             raise ValueError('Authentication failed.')
         except paramiko.BadHostKeyException:
             raise ValueError('Bad host key.')
-
+        
+        _, stdout, stderr = ssh.exec_command('tmux -V',timeout=1)
+        if(stderr.read().decode()!=''):
+            raise ValueError('tmux not found. Please install tmux on this system')
+        
         term = self.get_argument('term', u'') or u'xterm'
         chan = ssh.invoke_shell(term=term)
         chan.setblocking(0)
@@ -549,64 +530,12 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
         self.write(self.result)
 
-#Creating handler for websocket requests carrying command id for querying command database
-class Websocksql(tornado.websocket.WebSocketHandler):
-    #check origin set to true allows websocket requests from all domains. Set this appropriately in case more
-    #security is required
-    def check_origin(self, origin):
-        return True
-    
-    def get_status_and_time(self):
-        message=self.recieved_message
-        try:
-            cnx = my.connect(user="root",host="localhost",password="")
-            cnx.start_transaction(isolation_level='READ COMMITTED')
-        except my.Error as e:
-            logging.info(e)
-        try:
-            response=None
-            #Continuously query the database for the tuple with the given command id
-            #Change the True in the while loop to some value to prevent the thread from running forever.
-            #I choose 20min timeout interval(20x60=1200)
-            t=0
-            while(t<=1200):
-                x=fetch_command_status(message,cnx)
-                if(type(x)==str):
-                    time.sleep(1)
-                    t=t+1
-                else:
-                    response='{"Command_Execution_Status":"'+x[2]+'","Execution_Time":"'+x[3]+'"}'
-                    break
-        except Exception as e:
-            logging.info(e)
-        if(response):
-            logging.info("Response given to client:"+response)
-            loop=asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            self.write_message(response)
-            loop.run_until_complete(loop.shutdown_asyncgens())
-            loop.close()
-        logging.info("thread closed")
-    
-    #Do something when connection is opened
-    def open(self):
-        pass
-    def on_message(self,message):
-        logging.info("Command ID received from client:"+message)
-        self.recieved_message=message
-    #Activate an independent thread for each request so that subsequent requests are not blocked
-        t=threading.Thread(target=self.get_status_and_time)
-        t.start()
-    
-    #Do something when connection is closed
-    def on_close(self):
-        pass
-
 class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
 
     def initialize(self, loop):
         super(WsockHandler, self).initialize(loop)
         self.worker_ref = None
+        self.search_bit=0
 
     def open(self):
         self.src_addr = self.get_client_addr()
@@ -663,40 +592,38 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
                 worker.chan.resize_pty(*resize)
             except (TypeError, struct.error, paramiko.SSHException):
                 pass
-        #the special commands are ones that we can just execute and not wait for its status.
-        special_commands=['script']
+
         data = msg.get('data')
         if data and isinstance(data, UnicodeType):
-            #use regular expressions to search for command inserted into the terminal
-            match_object=re.search("!@#abc123",data)
-            if(match_object):
-                data=data[match_object.start()+9:]
-                match_object2=re.search(";echo 'Command_",data)
+            #check whether a command id has been found for searching only
+            search_match_object=re.search("1a#@!",data)
+            if(search_match_object):
+                match_object2=re.search("@#!",data)
                 if(match_object2):
-                    #tell the worker that a command has arrived
-                    worker.input_command.append(data[:match_object2.start()])
-                    for i in special_commands:
-                        x=re.search(i,data[:match_object2.start()])
-                        if(x):
-                            if(x.start()==0):
-                                data=data[:match_object2.start()]+"\n"
-                                worker.input_command.pop(0)
-                                break
-                    else:
-                    #tell the worker that time at which command has arrived
-                        worker.entry_timestamp.append(datetime.now())
-                    #create a unique identifier for every command
-                        uid='CID'
-                        for i in range(10):
-                            uid=uid+str(random.randint(0,9))
-                        for i in range(3):
-                            uid=uid+random.choice(string.ascii_letters).upper()
-                        worker.command_ids.append(uid)
-                        worker.push_command_id()
+                    worker.search_id=data[search_match_object.start()+5:match_object2.start()]
+                    worker.search_command=data[match_object2.start()+3:]
+                    worker.entry_timestamp=datetime.now()
+                self.search_bit=1
+            
+            if(self.search_bit==0):  
+                #use regular expressions to search for command inserted into the terminal
+                match_object=re.search("!@#a1",data)
+                if(match_object):
+                    data=data[match_object.start()+5:]
+                    match_object2=re.search("!#@",data)
+                    if(match_object2):
+                        #tell the worker that a command with status monitoring has arrived
+                        worker.input_command=data[:match_object2.start()]
+                        worker.command_id=data[match_object2.start()+3:].split(':')[0].split(' ')[1]
+                        data=worker.input_command+data[match_object2.start()+3:]
+                        worker.entry_timestamp=datetime.now()
                         logging.info("Command recieved")
                     
-            worker.data_to_dst.append(data)
-            worker.on_write()
+                worker.data_to_dst.append(data)
+                worker.on_write()
+            else:
+                self.search_bit=0
+            
 
     def on_close(self):
         logging.info('Disconnected from {}:{}'.format(*self.src_addr))

@@ -4,8 +4,7 @@ var jQuery;
 var wssh = {};
 
 //some flags for dealing with command execution status and time
-this.flag==0;
-this.command_id_flag=0;
+this.flag=0;
 
 (function() {
   // For FormData without getter and setter
@@ -394,34 +393,18 @@ jQuery(function($){
     } else {
       console.log('The deault encoding of your server is ' + msg.encoding);
     }
-    
-    //function to extract command id sent by the server and send it to the iframe
-    function get_command_id(text){
-    var command_id='';
-    var t=text.toString();
-    var pos1=t.search("!@#Command_ID:");
-    if(pos1!=-1)
-    command_id=t.substring(pos1+14,pos1+30);
-    if(command_id!=''){
-    this.command_id_flag=1;
-    console.log("Command_ID:"+command_id);
-    $('#command_id').val(JSON.stringify({"Command_ID":command_id}));
-    $('#b3').click();
-    }
-    }
 
     //function to extract command status and execution time sent by the server and send it to the iframe
     function get_time_status(text){
       var command_output=null;
           var t=text.toString();
-          var pos1=t.search(";!@#");
-          var pos2=t.search("#@!;");
+          var pos1=t.search("!@#");
+          var pos2=t.search("#@!");
           if(pos1!=-1 && pos2!=-1){
-          command_output=JSON.parse(t.substring(pos1+4,pos2));
+          command_output=JSON.parse(t.substring(pos1+3,pos2));
           }
           if(command_output!=null){
           this.flag=1;
-          console.log("Command_Execution_Time:"+command_output.Execution_Time+" Command Execution Status:"+command_output.Command_Execution_Status);
           $('#command_output_data').val(JSON.stringify(command_output));
           $('#b2').click();
         }
@@ -429,14 +412,11 @@ jQuery(function($){
 
     function term_write(text) {
       if (term) {
-        //find the command status, time and the id.
+        //find the command status and time.
         //we make sure that the intermediate results given by the server are not displayed in the terminal
         get_time_status(text);
-        get_command_id(text);
         if(this.flag===1)
         this.flag=0;
-        else if(this.command_id_flag===1)
-        this.command_id_flag=0;
         else
         term.write(text);
         if (!term.resized) {
@@ -448,14 +428,10 @@ jQuery(function($){
 
 //to recieve command from the iframe and send it to the server
 function execute_command() {
-  var x=document.getElementById('command_data').value
-  console.log("command:"+x);
-  var command="";
-  command+="!@#abc123"+x+";echo 'Command_Execution_Status:'$?\n"
+  var command=document.getElementById('command_data').value;
   try{
   sock.send(JSON.stringify({'data': command}));}
-  catch(err){
-  console.log("Socket Error; Make sure you reload the webpage and authenticate before passing commands");}
+  catch(err){}
 }
 $( "#b1" ).on( "click", execute_command );
 
@@ -577,7 +553,6 @@ $( "#b1" ).on( "click", execute_command );
     };
 
     term.onData(function(data) {
-      // console.log(data);
       sock.send(JSON.stringify({'data': data}));
     });
 
@@ -589,10 +564,15 @@ $( "#b1" ).on( "click", execute_command );
       state = CONNECTED;
       title_element.text = url_opts_data.title || default_title;
       if (url_opts_data.command) {
-        setTimeout(function () {
-          sock.send(JSON.stringify({'data': url_opts_data.command+'\r'}));
-        }, 500);
-      }
+      if(sessionStorage.command_state==='1'){
+      	sock.send(JSON.stringify({'data': "1a#@!"+sessionStorage.search_id+"@#!"+sessionStorage.command}));}
+      if(sessionStorage.term_session!=='1'){
+      sock.send(JSON.stringify({'data': url_opts_data.command+' new -s '+url.split('=')[1]+';exit\r'}));
+      sessionStorage.term_session=1;
+      sessionStorage.ws_url=url.split('=')[1];}
+      else
+      sock.send(JSON.stringify({'data': url_opts_data.command+' attach -t'+sessionStorage.ws_url+';exit\r'}));
+    }
     };
 
     sock.onmessage = function(msg) {
@@ -608,6 +588,9 @@ $( "#b1" ).on( "click", execute_command );
       term = undefined;
       sock = undefined;
       reset_wssh();
+      if(e.reason==='chan closed'){
+      sessionStorage.removeItem('term_session');
+      sessionStorage.removeItem('ws_url');}
       log_status(e.reason, true);
       state = DISCONNECTED;
       default_title = 'WebSSH';

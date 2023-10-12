@@ -3,15 +3,10 @@
 <link href="static/img/favicon.png" rel="icon" type="image/png">
 <title> IEWT </title>
 <style>
-#clear{
-position:absolute;
-top:60px;
-right:0px;
-}
 #terminal{
 position:absolute;
 bottom:0px;
-height:300px;
+height:50%;
 width:100%;
 resize:both;
 overflow:auto;
@@ -22,7 +17,7 @@ overflow:auto;
 
 <!--The div 'app' is a div that contains mechanisms to:
 1. Type input command and send it to the iframe
-2. Display the command status, time and command id for the entered command
+2. Display the command status and time for the entered command
 -->
 <div id="app">
 Fill the form(for the remote machine's SSH credentials) at the bottom of the page to get the terminal.<hr>
@@ -30,95 +25,64 @@ Fill the form(for the remote machine's SSH credentials) at the bottom of the pag
   <button id="sendMessage">Send Message</button><br>
   <button id="CES">Command Execution Status</button><br>
   <input id="Time" type="text" placeholder="completion time" readonly/>
-  <input id="command_id" type="text" placeholder="command id"readonly/>
-</div>
-<div id="clear">
-Yellow button is to be used only when button input is disabled due to some error.<br>
-<button onclick="clear_storage()" style="background-color:yellow">CLEAR PENDING COMMAND</button>
 </div>
 
 <div id="terminal">
-<iframe id="myFrame" src="index" style="width:100%; height:100%;"></iframe>
+<iframe id="myFrame" src="/index?command=tmux" style="width:100%; height:100%;"></iframe>
 </div>
 </body>
 <script>
+if(document.readyState!="complete" && sessionStorage.search_id)
+sessionStorage.command_state=1;
+</script>
+<script>
+this.special_comm_flag=0;
 //script to send command to the iframe.
+//special commands list
+var spec_commands=['script','exit']
   var button = document.querySelector("#sendMessage");
   function sendMessage() {
-  if(sessionStorage.command_state==='1'){
-  alert("You have a command running in the terminal. Please wait for its completion. You can open a new tab for entering commands if needed");}
-  else{
-    const message = document.querySelector("#message").value;
-    if(message.search('\\S')===-1)
+    var command = document.querySelector("#message").value;
+    if(command.search('\\S')===-1)
     alert("Empty command. Please enter a valid command");
     else{
     const iframe = document.querySelector("iframe");
-    iframe.contentWindow.postMessage(message, "*");}}
+    
+    var id=''
+    for(var i=0;i<13;i++)
+    	id+=Math.floor(Math.random()*10);
+    for(var i=0;i<spec_commands.length;i++)
+    	if(command.trim().split()[0]===spec_commands[i])
+    		this.special_comm_flag=1;
+    
+    if(this.special_comm_flag!==1)
+    message="!@#a1"+command+"!#@;echo "+id+":Command_Execution_Status=$?\r";
+    else{
+    message="!@#a1"+command+"\r";
+    this.special_comm_flag=0;}
+    iframe.contentWindow.postMessage(message, "*");
+    
+    sessionStorage.search_id=id;
+    sessionStorage.command=command;
+    
+    }
   }
   button.addEventListener("click", sendMessage);
 </script>
 <script>
 //script to display messages recieved from iframe.
-//Note that we store command ID in the session storage
-//We also store a special variable called command state with value 1 in the session storage
   window.addEventListener('message', function(event) {
   var x=JSON.parse(event.data);
   if(x!=null){
-  if(Object.keys(x).length===1){
-  console.log("Command ID received from the child: " + x.Command_ID);
-  document.getElementById("command_id").value=x.Command_ID;
-  sessionStorage.Command_ID=x.Command_ID
-  sessionStorage.command_state=1
-  }
-//to display command status and time. When we recieve them, we set command state as 0.
-  else if(Object.keys(x).length===2){
-    console.log("Message received from the child: " + x.Command_Execution_Status+x.Execution_Time);
-    document.getElementById("Time").value=x.Execution_Time;
-    sessionStorage.command_state=0    
+    sessionStorage.removeItem('search_id');
+    sessionStorage.removeItem('command');
+    sessionStorage.command_state=0;
+    document.getElementById("Time").value=x.Execution_Time;    
     if(x.Command_Execution_Status==='0')
 document.getElementById("CES").style.background='green';
 else
 document.getElementById("CES").style.background='red';
 }
-}
   });
-</script>
-<script>
-/*to deal with reload events when a command is yet to be executed in the terminal;
-1. check if there is a page reload event
-2. check if there is such a command which we have sent for execution but havent recieved its status and time. For this we check
-i. If session storage has a command id
-ii. If session state is 1
-3. If conditions 1 and 2 are true then we open a websocket connection with the server and then
-i. Send the command id whose value is in session storage to the server
-ii. Wait for the server to send the status and time of the command
-iii. When command status and time are recieved, then set session state as 0 and display the status and time*/
-
-if(document.readyState!="complete" && sessionStorage.Command_ID!=null && sessionStorage.command_state==='1'){
-console.log("Websocket for pending command activated");
-const socket = new WebSocket('ws://localhost:8888/sql/');
-socket.addEventListener('open', function (event) {
-    socket.send(sessionStorage.Command_ID);
-});
-socket.addEventListener('message', function (event) {
-var x=JSON.parse(event.data)
-document.getElementById("Time").value=x.Execution_Time;
-sessionStorage.command_state=0
-if(x.Command_Execution_Status==='0')
-document.getElementById("CES").style.background='green';
-else
-document.getElementById("CES").style.background='red';
-    socket.close()
-});
-}
-</script>
-<script>
-//to clear session storage in case of error. This makes it convenient for the user to enable button input instead of manually clearing session storage
-function clear_storage(){
-sessionStorage.command_state=0;
-//since the terminal is in an error state, reload the iframe to obtain a fresh terminal.
-const iframe = document.querySelector("iframe");
-iframe.contentWindow.location.reload();
-}
 </script>
 </html>
