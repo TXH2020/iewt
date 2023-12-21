@@ -103,19 +103,17 @@
     <script src="static/js/xterm-addon-fit.min.js"></script>
     <script src="static/js/main.js"></script>
     <script>
-//send command to jquery
-window.addEventListener('message', function(event) {
-    document.getElementById('command_data').value=event.data;
-    document.getElementById('b1').click();
-  });
-</script>
-<script>
-//recieve command status and time from jquery
-var button = document.querySelector("#b2");
-button.addEventListener("click", function () {
-var message = document.querySelector("#command_output_data").value;
-window.parent.postMessage(message, "*");
-  });
+	//recieve command from parent(UI) and send it to jquery
+	window.addEventListener('message', function(event) {
+	    document.getElementById('command_data').value=event.data;
+	    document.getElementById('b1').click();
+	  });
+	//recieve command status and time from jquery and send it to parent(UI)
+	var button = document.querySelector("#b2");
+	button.addEventListener("click", function () {
+	var message = document.querySelector("#command_output_data").value;
+	window.parent.postMessage(message, "*");
+	  });
 </script>
   </body>
 </html>

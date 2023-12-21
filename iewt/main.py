@@ -1,7 +1,6 @@
 import logging
 import tornado.web
 import tornado.ioloop
-
 from tornado.options import options
 from iewt import handler
 from iewt.handler import IEWTHandler, IndexHandler, WsockHandler, NotFoundHandler
@@ -10,12 +9,15 @@ from iewt.settings import (
     get_ssl_context, get_server_settings, check_encoding_setting
 )
 
+#sqlite3 is used to create a disk based database.
+import sqlite3
 
 def make_handlers(loop, options):
     host_keys_settings = get_host_keys_settings(options)
     policy = get_policy_setting(options, host_keys_settings)
 
     handlers = [
+        #IEWT handler is to render the frontend(iewt.html).
         (r'/', IEWTHandler),
         (r'/index', IndexHandler, dict(loop=loop, policy=policy,
                                   host_keys_settings=host_keys_settings)),
@@ -44,6 +46,19 @@ def app_listen(app, port, address, server_settings):
 def main():
     options.parse_command_line()
     check_encoding_setting(options.encoding)
+    #For managing the disk database
+    try:
+        #create (or connect to) disk database
+        con=sqlite3.connect("entry_time_backup.db")
+        cur=con.cursor()
+        #create (if not existing) table upon the disk database
+        cur.execute("create table if not exists entry_time_table(session_id,timestamp)")
+        con.close()
+    except sqlite3.OperationalError as e:
+        #If database creation fails, it is mostly because of privelege issue.
+        logging.info(e+"\nFile creation required. Run application in a location with sufficient priveleges")
+        return
+    
     loop = tornado.ioloop.IOLoop.current()
     app = make_app(make_handlers(loop, options), get_app_settings(options))
     ssl_ctx = get_ssl_context(options)

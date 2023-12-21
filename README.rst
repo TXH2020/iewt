@@ -1,30 +1,28 @@
 IEWT(Interactive Embedded Web Terminal)
 ------------------------------------------
 
-This release provides several improvements over the previous ones.
+Changes:
 
-- Tmux has been integrated with the application. All terminals will hence be created upon tmux. This provides a lot of advantages:
-
-  1. The terminals as well as the commands that run on it are preserved in the events of page reload. Also, the application tracks commands for status and time even in the case of a reload.
-  2. No need for a database server. Hence the application is simpler to configure and also lighter.
-  3. Frontend is simplified since command id need not be explicitly maintained for command tracking.
-  4. There is no need to prevent sessions from closing immediately(to preserve commands during reload events). Hence the application is more flexible and simpler.
-
-- The logging has been improved. A separate logs directory will be created. One log per terminal session will be created in the logs directory.
-- No logging is made on the browser console to prevent clogging by unnecessary messages.
-- The application makes a post request with all command information to a server on port 5000 on localhost(only if it is available). Hence, the other server can be primarily used to store command information for future analysis or other purposes and its implementation is completely left to the user. This is suitable for a MicroServices setup for optional analysis. The app first checks if the server is alive by pinging localhost:5000/test. If successful, it makes post requests to localhost:5000/command.
-- The microservices setup is further strengthened by the attempt to abstract several functions from the backend to the frontend. For example, the special commands(script,exit) are checked in the frontend instead of the backend. The frontend also generates an internal command id which the backend generated previously. The backend is only responsible for the terminals, command execution and tracking of commands.
-
-Note: The command execution time obtained in the case of reload events is the time between the restoration of the terminal and the retrieval of the status and not the actual execution time.
+- The execution time of commands is recorded even in case of page reload events.
+- The application checks if the remote system has tmux installed. Only if installed, tmux is used. Otherwise a normal web terminal is opened. Hence this release is less restrictive.
+- Ability to deal with Ctrl+C.
+- Additional handlers for test and terminal visualization.
+- Separate channel for commands and terminal in WebSocket handler for server to distinguish input. 
+- Different datatypes for command results and terminal output for client to distinguish output.
+- No logging.
+- No requests.
+- A file transfer demonstration has been added.
+- This release has been thoroughly tested.
 
 Installation:
 ----------------
 
-- Run ``pip install iewt`` to install iewt package.
-- To test the application you need to have
+- Python 3.8+
+- Run ``pip install iewt`` to install iewt package. IEWT requires file creation permissions, hence run in a location with sufficient permissions.
+- To run the application you need to have
 
-  1. A computer/VM with a Unix(Linux, MacOS etc.) OS.
-  2. Tmux installed on the computer/VM.
+  1. A remote machine with a Unix(Linux, MacOS etc.) OS.
+  2. Tmux installed on the computer/VM.(Optional)
   3. SSH server running on the computer/VM.
   4. Network access to the SSH server.
 

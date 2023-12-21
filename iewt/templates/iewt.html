@@ -8,81 +8,22 @@ position:absolute;
 bottom:0px;
 height:50%;
 width:100%;
-resize:both;
-overflow:auto;
 }
 </style>
 </head>
 <body>
-
-<!--The div 'app' is a div that contains mechanisms to:
-1. Type input command and send it to the iframe
-2. Display the command status and time for the entered command
--->
+<!--The div responsible for the UI of the application-->
 <div id="app">
 Fill the form(for the remote machine's SSH credentials) at the bottom of the page to get the terminal.<hr>
   Enter the command here:<input id="message" type="text" />
   <button id="sendMessage">Send Message</button><br>
   <button id="CES">Command Execution Status</button><br>
   <input id="Time" type="text" placeholder="completion time" readonly/>
+  <script src="static/js/iewt.js"></script>
 </div>
-
+<!--The div responsible for the terminal interface. Works upon an iframe-->
 <div id="terminal">
 <iframe id="myFrame" src="/index?command=tmux" style="width:100%; height:100%;"></iframe>
 </div>
 </body>
-<script>
-if(document.readyState!="complete" && sessionStorage.search_id)
-sessionStorage.command_state=1;
-</script>
-<script>
-this.special_comm_flag=0;
-//script to send command to the iframe.
-//special commands list
-var spec_commands=['script','exit']
-  var button = document.querySelector("#sendMessage");
-  function sendMessage() {
-    var command = document.querySelector("#message").value;
-    if(command.search('\\S')===-1)
-    alert("Empty command. Please enter a valid command");
-    else{
-    const iframe = document.querySelector("iframe");
-    
-    var id=''
-    for(var i=0;i<13;i++)
-    	id+=Math.floor(Math.random()*10);
-    for(var i=0;i<spec_commands.length;i++)
-    	if(command.trim().split()[0]===spec_commands[i])
-    		this.special_comm_flag=1;
-    
-    if(this.special_comm_flag!==1)
-    message="!@#a1"+command+"!#@;echo "+id+":Command_Execution_Status=$?\r";
-    else{
-    message="!@#a1"+command+"\r";
-    this.special_comm_flag=0;}
-    iframe.contentWindow.postMessage(message, "*");
-    
-    sessionStorage.search_id=id;
-    sessionStorage.command=command;
-    
-    }
-  }
-  button.addEventListener("click", sendMessage);
-</script>
-<script>
-//script to display messages recieved from iframe.
-  window.addEventListener('message', function(event) {
-  var x=JSON.parse(event.data);
-  if(x!=null){
-    sessionStorage.removeItem('search_id');
-    sessionStorage.removeItem('command');
-    sessionStorage.command_state=0;
-    document.getElementById("Time").value=x.Execution_Time;    
-    if(x.Command_Execution_Status==='0')
-document.getElementById("CES").style.background='green';
-else
-document.getElementById("CES").style.background='red';
-}
-  });
-</script>
 </html>

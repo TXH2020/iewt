@@ -7,8 +7,6 @@ import traceback
 import weakref
 import paramiko
 import tornado.web
-import re
-from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from tornado.ioloop import IOLoop
 from tornado.options import options
@@ -36,7 +34,18 @@ DEFAULT_PORT = 22
 swallow_http_errors = True
 redirecting = None
 
+#time is used for obtaining timestamp
+import time
+#obtain time in seconds using math.floor()
+import math
+#sqlite3 is used to manage a disk based database.
+import sqlite3
 
+def check_empty_string(string_list):
+    for i in range(len(string_list)):
+        if(string_list[i]==''):
+            return True
+    
 class InvalidValueError(Exception):
     pass
 
@@ -463,9 +472,10 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         except paramiko.BadHostKeyException:
             raise ValueError('Bad host key.')
         
-        _, stdout, stderr = ssh.exec_command('tmux -V',timeout=1)
-        if(stderr.read().decode()!=''):
-            raise ValueError('tmux not found. Please install tmux on this system')
+        #Only Unix is supported, check if remote system runs Unix.
+        _, stdout, stderr = ssh.exec_command('echo $?')
+        if(stdout.read().decode().rstrip('\n').strip()=="$?" or stderr.read().decode()):
+            raise ValueError('Only Unix is supported')
         
         term = self.get_argument('term', u'') or u'xterm'
         chan = ssh.invoke_shell(term=term)
@@ -473,6 +483,10 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         worker = Worker(self.loop, ssh, chan, dst_addr)
         worker.encoding = options.encoding if options.encoding else \
             self.get_default_encoding(ssh)
+        #Check if tmux is installed.
+        _, _, stderr=ssh.exec_command('tmux -V',timeout=1)
+        if(stderr.read().decode()):
+            worker.tmux_bit=0
         return worker
 
     def check_origin(self):
@@ -526,7 +540,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
             worker.src_addr = (ip, port)
             workers[worker.id] = worker
             self.loop.call_later(options.delay, recycle_worker, worker)
-            self.result.update(id=worker.id, encoding=worker.encoding)
+            self.result.update(id=worker.id, encoding=worker.encoding,tmux=worker.tmux_bit)
 
         self.write(self.result)
 
@@ -535,7 +549,8 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
     def initialize(self, loop):
         super(WsockHandler, self).initialize(loop)
         self.worker_ref = None
-        self.search_bit=0
+        #For testing
+        self.test_bit=0
 
     def open(self):
         self.src_addr = self.get_client_addr()
@@ -592,39 +607,97 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
                 worker.chan.resize_pty(*resize)
             except (TypeError, struct.error, paramiko.SSHException):
                 pass
-
+        
         data = msg.get('data')
         if data and isinstance(data, UnicodeType):
-            #check whether a command id has been found for searching only
-            search_match_object=re.search("1a#@!",data)
-            if(search_match_object):
-                match_object2=re.search("@#!",data)
-                if(match_object2):
-                    worker.search_id=data[search_match_object.start()+5:match_object2.start()]
-                    worker.search_command=data[match_object2.start()+3:]
-                    worker.entry_timestamp=datetime.now()
-                self.search_bit=1
             
-            if(self.search_bit==0):  
-                #use regular expressions to search for command inserted into the terminal
-                match_object=re.search("!@#a1",data)
-                if(match_object):
-                    data=data[match_object.start()+5:]
-                    match_object2=re.search("!#@",data)
-                    if(match_object2):
-                        #tell the worker that a command with status monitoring has arrived
-                        worker.input_command=data[:match_object2.start()]
-                        worker.command_id=data[match_object2.start()+3:].split(':')[0].split(' ')[1]
-                        data=worker.input_command+data[match_object2.start()+3:]
-                        worker.entry_timestamp=datetime.now()
-                        logging.info("Command recieved")
-                    
+            #Handle signals when there is an input command being tracked for status.
+            if(data=="\x03" and worker.input_command):
+                worker.input_command=None
+
+            worker.data_to_dst.append(data)
+            worker.on_write()
+    
+        #For handling "interactive execution" i.e., indirect execution from outside the terminal
+        data = msg.get('command')
+        if data and isinstance(data, UnicodeType):
+            #The following strictly expects a format for the command. Thus the frontend must ensure it.
+            command_parts=data.split('#')
+            #If the format is for interactive execution
+            if(len(command_parts)==5 and not(worker.input_command)):
+                if(check_empty_string(command_parts) or command_parts[1]!=';echo ' or command_parts[3]!=":Status=$?time-$((`date '+%s'`))_\r"):
+                    if(self.test_bit):
+                        #For testing
+                        worker.handler.write_message("Unsuccessful!")
+                    return
+                worker.input_command,worker.command_id,worker.session_id=tuple(command_parts[::2])
+                data=''.join(command_parts[:4])
                 worker.data_to_dst.append(data)
                 worker.on_write()
+                worker.entry_timestamp=math.floor(time.time())
+            #If the format is for dealing with commands in case of disconnections.
+            elif(len(command_parts)==3 and not(worker.input_command)):
+                if(check_empty_string(command_parts)):
+                    if(self.test_bit):
+                        #For testing
+                        worker.handler.write_message("Unsuccessful!")
+                    return
+                worker.input_command,worker.command_id,worker.session_id=tuple(command_parts)
+                try:
+                    #Connect to disk database
+                    con=sqlite3.connect("entry_time_backup.db")
+                    cur=con.cursor()
+                    #Find entries related to disconnected session
+                    s1=cur.execute("select timestamp from entry_time_table where session_id=?",(worker.session_id,)).fetchall()
+                    con.close()
+                    if(len(s1)==1 and type(s1[0][0])==int):
+                        worker.entry_timestamp=s1[0][0]
+                        if(self.test_bit):
+                            #For testing
+                            worker.handler.write_message("Successful!")
+                    else:
+                        if(self.test_bit):
+                            #For testing
+                            worker.handler.write_message("Unsuccessful!")
+                        worker.input_command=None
+                        return
+                except sqlite3.OperationalError as e:
+                    logging.info(e)
+                    worker.input_command=None
+                    if(self.test_bit):
+                        #For testing
+                        worker.handler.write_message("Unsuccessful!")
+                    return
+            #If none of the above format is found then simply execute it without awaiting status.
             else:
-                self.search_bit=0
+                #Handle signals when there is an input command being tracked for status.
+                if(data=="\x03" and worker.input_command):
+                    worker.input_command=None
+                worker.data_to_dst.append(data)
+                worker.on_write()
+                if(self.test_bit):
+                    #For testing
+                    worker.handler.write_message("Successful!")
+       
+        #To be used for testing purposes
+        data = msg.get('test')
+        if data and isinstance(data, str):
+            self.test_bit=1
+        
+        #To be used for visualization of the interactive command execution.
+        #This visualization can be seen in the place where the application is launched.
+        data = msg.get('visualize')
+        if data and isinstance(data, str):
+            worker.visualize_bit=1
             
-
+        #For demonstrating the file transfer capability. File will copied to remote system's home directory.
+        #The file is assumed to be in the same host as the application. Hence only filename is used.
+        data = msg.get('file_transfer')
+        if data and isinstance(data, str):
+            sftp=worker.ssh.open_sftp()
+            sftp.put(data, data.split('/')[-1])
+            worker.handler.write_message("Successful!")
+                
     def on_close(self):
         logging.info('Disconnected from {}:{}'.format(*self.src_addr))
         if not self.close_reason:
@@ -633,6 +706,7 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
         if worker:
             worker.close(reason=self.close_reason)
 
+#The handler responsible for rendering the IEWT UI.
 class IEWTHandler(tornado.web.RequestHandler):
     def get(self):
         self.render('iewt.html')

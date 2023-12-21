@@ -3,9 +3,6 @@
 var jQuery;
 var wssh = {};
 
-//some flags for dealing with command execution status and time
-this.flag=0;
-
 (function() {
   // For FormData without getter and setter
   var proto = FormData.prototype,
@@ -360,6 +357,7 @@ jQuery(function($){
       state = DISCONNECTED;
       return;
     }
+    var tmux=msg.tmux;
     var ws_url = window.location.href.split(/\?|#/, 1)[0].replace('http', 'ws'),
         join = (ws_url[ws_url.length-1] === '/' ? '' : '/'),
         url = ws_url + join + 'ws?id=' + msg.id,
@@ -391,33 +389,17 @@ jQuery(function($){
       console.log('Unable to detect the default encoding of your server');
       msg.encoding = encoding;
     } else {
-      console.log('The deault encoding of your server is ' + msg.encoding);
+      console.log('The default encoding of your server is ' + msg.encoding);
     }
 
-    //function to extract command status and execution time sent by the server and send it to the iframe
-    function get_time_status(text){
-      var command_output=null;
-          var t=text.toString();
-          var pos1=t.search("!@#");
-          var pos2=t.search("#@!");
-          if(pos1!=-1 && pos2!=-1){
-          command_output=JSON.parse(t.substring(pos1+3,pos2));
-          }
-          if(command_output!=null){
-          this.flag=1;
-          $('#command_output_data').val(JSON.stringify(command_output));
+    //function to extract command output sent by the server and send it to the iframe
+    function send_time_status(output){	
+          $('#command_output_data').val(JSON.stringify(output));
           $('#b2').click();
-        }
     }
 
     function term_write(text) {
       if (term) {
-        //find the command status and time.
-        //we make sure that the intermediate results given by the server are not displayed in the terminal
-        get_time_status(text);
-        if(this.flag===1)
-        this.flag=0;
-        else
         term.write(text);
         if (!term.resized) {
           resize_terminal(term);
@@ -430,7 +412,7 @@ jQuery(function($){
 function execute_command() {
   var command=document.getElementById('command_data').value;
   try{
-  sock.send(JSON.stringify({'data': command}));}
+  sock.send(JSON.stringify({'command': command}));}
   catch(err){}
 }
 $( "#b1" ).on( "click", execute_command );
@@ -563,20 +545,30 @@ $( "#b1" ).on( "click", execute_command );
       term.focus();
       state = CONNECTED;
       title_element.text = url_opts_data.title || default_title;
-      if (url_opts_data.command) {
-      if(sessionStorage.command_state==='1'){
-      	sock.send(JSON.stringify({'data': "1a#@!"+sessionStorage.search_id+"@#!"+sessionStorage.command}));}
-      if(sessionStorage.term_session!=='1'){
-      sock.send(JSON.stringify({'data': url_opts_data.command+' new -s '+url.split('=')[1]+';exit\r'}));
-      sessionStorage.term_session=1;
-      sessionStorage.ws_url=url.split('=')[1];}
-      else
-      sock.send(JSON.stringify({'data': url_opts_data.command+' attach -t'+sessionStorage.ws_url+';exit\r'}));
+      if (url_opts_data.command && tmux==1) {
+      //if there is a command pending, send its information to the server.
+	      if(sessionStorage.command_state==='1')
+	      	sock.send(JSON.stringify({'command': sessionStorage.command+"#"+sessionStorage.search_id+"#"+sessionStorage.ws_url}));
+	      //if a tmux session isnt present then create one. Otherwise attach to the existing session.
+	      if(sessionStorage.term_session!=='1'){
+	      sock.send(JSON.stringify({'data': url_opts_data.command+' new -s '+url.split('=')[1]+';exit\r'}));
+	      sessionStorage.term_session=1;
+	      sessionStorage.ws_url=url.split('=')[1];}
+	      else
+	      sock.send(JSON.stringify({'data': url_opts_data.command+' attach -t'+sessionStorage.ws_url+';exit\r'}));
     }
+    else
+    	alert("Tmux is not enabled. Long lived terminals are not supported")
     };
 
     sock.onmessage = function(msg) {
-      read_file_as_text(msg.data, term_write, decoder);
+      //find the command output.
+      //make sure that the intermediate results given by the server are not displayed in the terminal
+      try{
+          output=JSON.parse(msg.data);
+          send_time_status(output);}
+      catch(err){
+      read_file_as_text(msg.data, term_write, decoder);}
     };
 
     sock.onerror = function(e) {
@@ -588,9 +580,12 @@ $( "#b1" ).on( "click", execute_command );
       term = undefined;
       sock = undefined;
       reset_wssh();
-      if(e.reason==='chan closed'){
-      sessionStorage.removeItem('term_session');
-      sessionStorage.removeItem('ws_url');}
+      //if user exits tmux session, remove its related info
+      if(e.reason==='chan closed')
+      {
+	      sessionStorage.removeItem('term_session');
+	      sessionStorage.removeItem('ws_url');
+	}	      
       log_status(e.reason, true);
       state = DISCONNECTED;
       default_title = 'WebSSH';

@@ -1,0 +1,6 @@
+#asyncio, aiohttp and websocket-client are required for testing purposes
+aiohttp
+asyncio
+paramiko>=2.3.1
+tornado>=4.5.0
+websocket-client

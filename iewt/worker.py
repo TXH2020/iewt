@@ -8,20 +8,16 @@ from uuid import uuid4
 from tornado.ioloop import IOLoop
 from tornado.iostream import _ERRNO_CONNRESET
 from tornado.util import errno_from_exception
-#additional libraries
-import requests
+
+#datetime is used to deal with timestamps
 from datetime import datetime
+#re is used to search for command status and time.
 import re
-import os
+#sqlite3 is used to manage a disk based database.
+import sqlite3
 
 BUF_SIZE = 32 * 1024
 clients = {}  # {ip: {id: worker}}
-
-#For logging terminal sessions
-current_dir=os.getcwd()
-if(os.path.exists(os.path.join(current_dir,'logs'))==False):
-   os.mkdir('logs')
-log_directory=os.path.join(current_dir,'logs')
 
 def clear_worker(worker, clients):
     ip = worker.src_addr[0]
@@ -54,22 +50,17 @@ class Worker(object):
         self.handler = None
         self.mode = IOLoop.READ
         self.closed = False
-        #the variables defined below are for various purposes. To add one, simpy write self.<variable_name>
+
+        #visualize bit is for the visualization of the interactive command execution.
+        #This visualization can be seen in the place where the application is launched.
+        self.visualize_bit=0
+        #For checking tmux.Assume tmux is present by default
+        self.tmux_bit=1
+        #The four components of a command sent for interactive execution.
         self.input_command=None
         self.command_id=None
         self.entry_timestamp=None
-        self.conn=None
-        self.conn_status=0
-        self.search_id=None
-        self.search_bit=0
-        self.search_command=None
-        
-        try:
-            self.conn=requests.Session()
-            self.conn.get('http://localhost:5000/test')
-            self.conn_status=1
-        except Exception as e:
-            logging.info(e)
+        self.session_id=None
 
     def __call__(self, fd, events):
         if events & IOLoop.READ:
@@ -77,41 +68,23 @@ class Worker(object):
         if events & IOLoop.WRITE:
             self.on_write()
         if events & IOLoop.ERROR:
-            self.close(reason='error event occurred')        
-            
-    #to extract the command execution status and time taken to execute the comand
-    def get_time_status(self,text):
-        command_execution_status=''
-        execution_time=''
-        t=text.decode()
-        cst=re.search('Command_Execution_Status=[0-9]{1,3}',t)
-        search_text_match=None
-        if(self.search_id):
-            try:
-                search_text_match=re.search(self.search_id+':'+'Command_Execution_Status=[0-9]{1,3}',t)
-                if(search_text_match):
-                    self.search_bit=1
-            except:
-                pass
-        if((cst and self.input_command) or self.search_bit==1):
-            exit_time=datetime.now()
-            if(self.search_bit==1):
-                cst=search_text_match
-            execution_time=execution_time+str(round((exit_time-self.entry_timestamp).total_seconds(),2))+"s"
-            equal_pos=re.search("=",t[cst.start():cst.end()]).start()
-            command_execution_status+=t[cst.start()+equal_pos+1:cst.end()]
-            logging.info("Command status and time recieved")
-        return command_execution_status,execution_time
-            
-    def send_command(self,command_execution_status,execution_time):
-           try:
-                data={"session_id":self.id,"command_id":self.command_id,"command":self.input_command,"command_Execution_Status"
-                      :command_execution_status,"execution_Time":execution_time,"timestamp":str(self.entry_timestamp)}
-                self.conn.post("http://localhost:5000/command",json=data)
-                logging.info("record sent successfully")
-           except Exception as e:
-               logging.info(e)
+            self.close(reason='error event occurred')
     
+    #to extract the command execution status and time taken to execute the comand
+    def get_time_status(self,t):
+        command_status,execution_time,cst=None,None,None
+        cst=re.search(self.command_id+':Status=[0-9]{1,3}',t)     
+        if(cst):
+            timepos=re.search(r"time\-",t[cst.start():]).start()
+            uscpos=re.search(r"\_",t[cst.start()+timepos:]).start()
+            epoch=int(t[cst.start()+timepos+5:cst.start()+timepos+uscpos])
+            exit_time=int(epoch)
+            entry_time=self.entry_timestamp
+            execution_time=str(exit_time-entry_time)+"s"
+            equal_pos=re.search("=",t[cst.start():cst.end()]).start()
+            command_status=t[cst.start()+equal_pos+1:cst.end()]
+        return command_status,execution_time
+            
     @classmethod
     def gen_id(cls):
         return secrets.token_urlsafe(nbytes=32) if secrets else uuid4().hex
@@ -131,11 +104,9 @@ class Worker(object):
         logging.debug('worker {} on read'.format(self.id))
         try:
             data = self.chan.recv(BUF_SIZE)
-            #for logging terminal session into a log file. It is stored where we invoke the server
-            with open(os.path.join(log_directory,self.id+'.log'),'ab') as f:
-                f.write(data)
-            #obtain command execution status and time
-            command_execution_status,execution_time=self.get_time_status(data)
+            #For terminal visualization
+            if(self.visualize_bit):
+                print(data.decode())
         except (OSError, IOError) as e:
             logging.error(e)
             if self.chan.closed or errno_from_exception(e) in _ERRNO_CONNRESET:
@@ -145,31 +116,19 @@ class Worker(object):
             if not data:
                 self.close(reason='chan closed')
                 return
-
             logging.debug('{!r} to {}:{}'.format(data, *self.handler.src_addr))
             try:
-                #if we have obtained status and time for an inserted command.
-                if(command_execution_status and execution_time and (self.input_command or self.search_bit==1)):
-                    result_string=';!@#{"Command_Execution_Status":"'+command_execution_status+'","Execution_Time":"'+execution_time+'"}#@!;'
-                    res = bytes(result_string, 'utf-8')
-                    #To send status and time back to client
-                    self.handler.write_message(res, binary=True)
-                    #If it is not search mode only then log and send to db service
-                    if(self.search_bit==1):
-                        self.input_command=self.search_command
-                        self.command_id=self.search_id
-                        self.search_bit=0
-                        self.search_id=None
-                    logging.info("Command ID:"+self.command_id+",Command:"+self.input_command+",Command Status:"+
-                                 command_execution_status+",Execution time:"+execution_time+
-                                 ",Timestamp:"+str(self.entry_timestamp))
-                    #Send command to database service.
-                    if(self.conn_status==1):
-                        self.send_command(command_execution_status,execution_time)
-                    #To clear inserted command to enable entry of next
-                    self.input_command=None
-                    self.entry_timestamp=None
-                    self.command_id=None
+                if(self.input_command):
+                    #obtain command execution status and time
+                    command_status,execution_time=self.get_time_status(data.decode())
+                    #if status and time is obtained
+                    if(command_status and execution_time):
+                        #The result of the interactive execution. Encode and send to the client.
+                        result_string='{"session":"%s","id":"%s","command":"%s","status":"%s","time":"%s","timestamp":"%s"}'%(
+                            self.session_id,self.command_id,self.input_command,command_status,execution_time,str(datetime.fromtimestamp(self.entry_timestamp)))
+                        self.handler.write_message(result_string)
+                        #To clear inserted command to enable entry of next
+                        self.input_command=None
                 self.handler.write_message(data, binary=True)
             except tornado.websocket.WebSocketClosedError:
                 self.close(reason='websocket closed')
@@ -201,6 +160,26 @@ class Worker(object):
     
         
     def close(self, reason=None):
+        
+        #Record the entry timestamp of the command for a particular session when a disconnection happens
+        if(self.input_command and self.tmux_bit):
+            try:
+                #Connect to disk database
+                con=sqlite3.connect("entry_time_backup.db")
+                cur=con.cursor()
+                #Check if there already is an entry for the session.
+                s1=cur.execute("select timestamp from entry_time_table where session_id=?",(self.session_id,))
+                #If not, insert a new entry.
+                if(s1.fetchall()==[]):
+                    cur.execute("insert into entry_time_table values (?,?)",(self.session_id,self.entry_timestamp))
+                #If present, update entry with new timestamp.
+                else:
+                    cur.execute("update entry_time_table set timestamp=? where session_id=?",(self.entry_timestamp,self.session_id))
+                con.commit()
+                con.close()
+            except sqlite3.OperationalError as e:
+                logging.info(e)
+                return
         if self.closed:
             return
         self.closed = True
@@ -213,7 +192,6 @@ class Worker(object):
             self.handler.close(reason=reason)
         self.chan.close()
         self.ssh.close()
-        self.conn.close()
         logging.info('Connection to {}:{} lost'.format(*self.dst_addr))
 
         clear_worker(self, clients)
