@@ -28,3 +28,11 @@ Installation:
 
 - Once all the above steps are performed, run the command ``iewt``. Open a browser and goto     `localhost:8888 <http://localhost:8888>`_
 - Enter the SSH credentials in the form at the bottom of the screen. The terminal will appear soon after. To automatically execute commands, type the commands in the input field and click on the **send command** button. The command is executed in the terminal and after its completion its time will appear in the readonly input field below the command status button. The command status turns green on success and red on failure.
+
+Tests:
+-----------
+
+- pip install -r requirements.txt
+- run each test individually.
+- change remote server credentials as per your requirements.
+- provide correct input paths where required.
