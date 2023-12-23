@@ -42,6 +42,11 @@ Code Coverage:
 - coverage run -m unittest discover tests
 - coverage report -m > coverage_report.txt
 
+Docker Image:
+------------------
+
+- docker compose up
+
 Legacy files:
 ---------------------
 
