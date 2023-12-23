@@ -34,6 +34,8 @@ DEFAULT_PORT = 22
 swallow_http_errors = True
 redirecting = None
 
+#global dictionary containing tmux_bits of all the workers
+tmux_bits={}
 #time is used for obtaining timestamp
 import time
 #obtain time in seconds using math.floor()
@@ -333,8 +335,8 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         self.ssh_client = self.get_ssh_client()
         self.debug = self.settings.get('debug', False)
         self.font = self.settings.get('font', '')
-        self.result = dict(id=None, status=None, encoding=None)
-
+        self.result = dict(id=None, status=None, encoding=None, tmux=None)
+        
     def write_error(self, status_code, **kwargs):
         if swallow_http_errors and self.request.method == 'POST':
             exc_info = kwargs.get('exc_info')
@@ -429,12 +431,32 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         if is_valid_encoding(encoding):
             return encoding
 
-    def get_default_encoding(self, ssh):
+    #Only Unix is supported, check if remote system runs Unix.
+    def check_os(self,ssh):
+        try:
+            _, stdout, stderr = ssh.exec_command('echo $?')
+            if(stdout.read().decode().rstrip('\n').strip()=="$?"):
+                raise ValueError('Only Unix is supported')
+        except paramiko.SSHException:
+            pass
+        
+    #Check if tmux is installed.
+    def check_tmux(self,ssh,worker):
+        global tmux_bits
+        try:
+            _, _, stderr=ssh.exec_command('tmux -V')
+            if(stderr.read().decode()):
+                tmux_bits[worker.id]=0
+            else:
+                tmux_bits[worker.id]=1
+        except paramiko.SSHException:
+            tmux_bits[worker.id]=0
+        
+    def get_default_encoding(self, ssh, worker):
         commands = [
             '$SHELL -ilc "locale charmap"',
             '$SHELL -ic "locale charmap"'
         ]
-
         for command in commands:
             try:
                 _, stdout, _ = ssh.exec_command(command,
@@ -452,7 +474,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
                     result = self.parse_encoding(data)
                     if result:
                         return result
-
+                    
         logging.warning('Could not detect the default encoding.')
         return 'utf-8'
             
@@ -472,21 +494,14 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         except paramiko.BadHostKeyException:
             raise ValueError('Bad host key.')
         
-        #Only Unix is supported, check if remote system runs Unix.
-        _, stdout, stderr = ssh.exec_command('echo $?')
-        if(stdout.read().decode().rstrip('\n').strip()=="$?" or stderr.read().decode()):
-            raise ValueError('Only Unix is supported')
-        
         term = self.get_argument('term', u'') or u'xterm'
         chan = ssh.invoke_shell(term=term)
         chan.setblocking(0)
         worker = Worker(self.loop, ssh, chan, dst_addr)
+        self.check_os(ssh)
+        self.check_tmux(ssh,worker)
         worker.encoding = options.encoding if options.encoding else \
-            self.get_default_encoding(ssh)
-        #Check if tmux is installed.
-        _, _, stderr=ssh.exec_command('tmux -V',timeout=1)
-        if(stderr.read().decode()):
-            worker.tmux_bit=0
+            self.get_default_encoding(ssh,worker)
         return worker
 
     def check_origin(self):
@@ -511,6 +526,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def post(self):
+        global tmux_bits
         if self.debug and self.get_argument('error', u''):
             # for testing purpose only
             raise ValueError('Uncaught exception')
@@ -540,7 +556,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
             worker.src_addr = (ip, port)
             workers[worker.id] = worker
             self.loop.call_later(options.delay, recycle_worker, worker)
-            self.result.update(id=worker.id, encoding=worker.encoding,tmux=worker.tmux_bit)
+            self.result.update(id=worker.id, encoding=worker.encoding,tmux=tmux_bits[worker.id])
 
         self.write(self.result)
 

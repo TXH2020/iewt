@@ -18,10 +18,10 @@ def make_handlers(loop, options):
 
     handlers = [
         #IEWT handler is to render the frontend(iewt.html).
-        (r'/', IEWTHandler),
-        (r'/index', IndexHandler, dict(loop=loop, policy=policy,
+        (r'/iewt', IEWTHandler),
+        (r'/', IndexHandler, dict(loop=loop, policy=policy,
                                   host_keys_settings=host_keys_settings)),
-        (r'/index/ws', WsockHandler, dict(loop=loop))
+        (r'/ws', WsockHandler, dict(loop=loop))
     ]
     return handlers
 

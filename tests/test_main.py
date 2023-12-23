@@ -1,27 +1,22 @@
 import unittest
-import os
-import sqlite3
 
-def connect_db():
-    try:
-        con=sqlite3.connect("db.db")
-        con.close()
-    except sqlite3.OperationalError as e:
-        return "string"
+from tornado.web import Application
+from iewt import handler
+from iewt.main import app_listen
 
-class TestDatabaseConnection(unittest.TestCase):
-    def test_creation_priveleged(self):
-        os.chdir('/home/osboxes/Desktop')
-        if(os.path.exists('db.db')):
-            os.remove('db.db')
-        connect_db()
-        self.assertEqual(os.path.exists('db.db'), True, "Unsuccessful")
 
-    def test_creation_unpriveleged(self):
-        os.chdir('/')
-        if(os.path.exists('db.db')):
-            os.remove('db.db')
-        self.assertEqual(type(connect_db()), str, "Unsuccessful")
+class TestMain(unittest.TestCase):
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_app_listen(self):
+        app = Application()
+        app.listen = lambda x, y, **kwargs: 1
+
+        handler.redirecting = None
+        server_settings = dict()
+        app_listen(app, 80, '127.0.0.1', server_settings)
+        self.assertFalse(handler.redirecting)
+
+        handler.redirecting = None
+        server_settings = dict(ssl_options='enabled')
+        app_listen(app, 80, '127.0.0.1', server_settings)
+        self.assertTrue(handler.redirecting)

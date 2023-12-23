@@ -60,7 +60,7 @@ def is_valid_encoding(encoding):
     except LookupError:
         return False
     except ValueError:
-        return True
+        return False
     return True
 
 
