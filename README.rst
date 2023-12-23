@@ -36,6 +36,12 @@ Unit Tests:
 - pip install flake8 mock
 - python -m unittest discover tests
 
+Code Coverage:
+-------------------
+
+- coverage run -m unittest discover tests
+- coverage report -m > coverage_report.txt
+
 Legacy files:
 ---------------------
 
