@@ -35,3 +35,9 @@ Unit Tests:
 
 - pip install flake8 mock
 - python -m unittest discover tests
+
+Legacy files:
+---------------------
+
+- dbservice-skeleton.py: part of release 1.0.2
+- setup.sql: part of releases 1.0.0 and 1.0.1
