@@ -50,5 +50,5 @@ Docker Image:
 Legacy files:
 ---------------------
 
-- dbservice-skeleton.py: part of release 1.0.2
-- setup.sql: part of releases 1.0.0 and 1.0.1
+- dbservice-skeleton.py: part of release 1.2.0
+- setup.sql: part of releases 1.0.0 and 1.1.0
