@@ -38,8 +38,6 @@ redirecting = None
 tmux_bits={}
 #time is used for obtaining timestamp
 import time
-#obtain time in seconds using math.floor()
-import math
 #sqlite3 is used to manage a disk based database.
 import sqlite3
 
@@ -567,6 +565,8 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
         self.worker_ref = None
         #For testing
         self.test_bit=0
+        #For time synchronization
+        self.correction_factor=0
 
     def open(self):
         self.src_addr = self.get_client_addr()
@@ -589,6 +589,15 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
                 worker.set_handler(self)
                 self.worker_ref = weakref.ref(worker)
                 self.loop.add_handler(worker.fd, worker, IOLoop.READ)
+                #for synchronization of server and remote machine times
+                try:
+                    _, stdout, stderr = worker.ssh.exec_command("date '+%s'")
+                    x=int(stdout.read().decode())
+                    y=int(time.time())
+                    if(x-y!=0):
+                        self.correction_factor=x-y
+                except:
+                    pass
             else:
                 self.close(reason='Websocket authentication failed.')
 
@@ -650,7 +659,7 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
                 data=''.join(command_parts[:4])
                 worker.data_to_dst.append(data)
                 worker.on_write()
-                worker.entry_timestamp=math.floor(time.time())
+                worker.entry_timestamp=int(time.time())+self.correction_factor
             #If the format is for dealing with commands in case of disconnections.
             elif(len(command_parts)==3 and not(worker.input_command)):
                 if(check_empty_string(command_parts)):
