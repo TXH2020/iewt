@@ -1,11 +1,7 @@
 IEWT(Interactive Embedded Web Terminal)
 ------------------------------------------
 
-This is a minor release that expands the scope of tests by including unit tests. Previously, only integration tests and load test were included.
-
-Also, there are few minor bug fixes. 
-
-Finally, the url to access the iewt in the browser has changed from localhost:8888 to localhost:8888/iewt.
+This release fixes the time (in Unix epoch) synchronization problem between the server and the remote machine.
 
 Installation:
 ----------------
