@@ -22,7 +22,7 @@ function sendMessage()
     	//if command is not special then augment it to find its status and time. Otherwise just send it for execution only.
     	if(special_comm_flag!=1)
     	{
-	    message=command+"#;echo #"+id+"#:Status=$?time-$((`date '+%s'`))_\r#"+sessionStorage.ws_url;
+	    message=command+"#;echo #"+id+"#:Status=$?time-$((`date '+%s'`))_\r";
     	}
     	else
     	{

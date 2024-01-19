@@ -416,9 +416,10 @@ jQuery(function($){
 function execute_command() {
   var command=document.getElementById('command_data').value;
   var tuple=command.split('#');
-  if(tuple.length==5){
+  if(tuple.length==4){
     sessionStorage.search_id=tuple[2];
-    sessionStorage.command=tuple[0];}
+    sessionStorage.command=tuple[0];
+    command+="#"+sessionStorage.ws_url;}
   try{
   sock.send(JSON.stringify({'command': command}));}
   catch(err){}
