@@ -1,11 +1,4 @@
 //check whether there is a command pending
-var com_status=0;
-if(document.readyState!="complete" && sessionStorage.search_id)
-{
-	sessionStorage.command_state=1;
-	var com_status=1;
-}
-
 var special_comm_flag=0;
 //special commands list
 var spec_commands=['script','exit']
@@ -30,9 +23,6 @@ function sendMessage()
     	if(special_comm_flag!=1)
     	{
 	    message=command+"#;echo #"+id+"#:Status=$?time-$((`date '+%s'`))_\r#"+sessionStorage.ws_url;
-	    sessionStorage.search_id=id;
-	    sessionStorage.command=command;
-	    com_status=1;
     	}
     	else
     	{
@@ -47,12 +37,8 @@ button.addEventListener("click", sendMessage);
 window.addEventListener('message', function(event) 
 {
 var x=JSON.parse(event.data);
-if(x!=null && com_status===1)
+if(x!=null)
 {
-	sessionStorage.removeItem('search_id');
-	sessionStorage.removeItem('command');
-	sessionStorage.command_state=0;
-	com_status=0;
 	document.getElementById("Time").value=x.time;    
 	if(x.status==='0')
 		document.getElementById("CES").style.background='green';

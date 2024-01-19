@@ -1,5 +1,6 @@
 /*jslint browser:true */
-
+if(document.readyState!="complete" && sessionStorage.search_id)
+	sessionStorage.command_state=1;
 var jQuery;
 var wssh = {};
 
@@ -393,7 +394,10 @@ jQuery(function($){
     }
 
     //function to extract command output sent by the server and send it to the iframe
-    function send_time_status(output){	
+    function send_time_status(output){
+    	  sessionStorage.removeItem('search_id');
+	  sessionStorage.removeItem('command');
+	  sessionStorage.command_state=0;
           $('#command_output_data').val(JSON.stringify(output));
           $('#b2').click();
     }
@@ -411,6 +415,10 @@ jQuery(function($){
 //to recieve command from the iframe and send it to the server
 function execute_command() {
   var command=document.getElementById('command_data').value;
+  var tuple=command.split('#');
+  if(tuple.length==5){
+    sessionStorage.search_id=tuple[2];
+    sessionStorage.command=tuple[0];}
   try{
   sock.send(JSON.stringify({'command': command}));}
   catch(err){}
@@ -545,7 +553,8 @@ $( "#b1" ).on( "click", execute_command );
       term.focus();
       state = CONNECTED;
       title_element.text = url_opts_data.title || default_title;
-      if (url_opts_data.command && tmux==1) {
+      if (url_opts_data.command=='tmux'){
+      if(tmux==1) {
       //if there is a command pending, send its information to the server.
 	      if(sessionStorage.command_state==='1')
 	      	sock.send(JSON.stringify({'command': sessionStorage.command+"#"+sessionStorage.search_id+"#"+sessionStorage.ws_url}));
@@ -559,6 +568,7 @@ $( "#b1" ).on( "click", execute_command );
     }
     else
     	alert("Tmux is not enabled. Long lived terminals are not supported")
+    }
     };
 
     sock.onmessage = function(msg) {

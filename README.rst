@@ -1,7 +1,7 @@
 IEWT(Interactive Embedded Web Terminal)
 ------------------------------------------
 
-This release fixes the time (in Unix epoch) synchronization problem between the server and the remote machine.
+This release has minor bug fixes.
 
 Installation:
 ----------------
