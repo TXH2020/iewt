@@ -1,7 +1,7 @@
 IEWT(Interactive Embedded Web Terminal)
 ------------------------------------------
 
-This release has minor bug fixes.
+This release has minor bug fixes. Commit 7 and 8 together remove the usage of session storage from iewt.js. All session storage usage is handled by main.js itself. These changes were made because the full functionality of iewt can now be integrated with frontend applications like React.js. Previously, if the code in iewt.js was integrated into React, it lead to a problem; the session storage of React and iewt are different. Hence the code did not work as intended. Now, by removing the session storage from iewt.js, such problem does not occur.
 
 Installation:
 ----------------
