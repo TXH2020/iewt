@@ -1,8 +1,9 @@
-#asyncio, aiohttp, flake8, mock and websocket-client are required for testing purposes
+#asyncio, aiohttp, flake8, mock, psutil and websocket-client are required for testing purposes
 aiohttp
 asyncio
 flake8
 mock
 paramiko>=2.3.1
+psutil
 tornado>=4.5.0
 websocket-client
