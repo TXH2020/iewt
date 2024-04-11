@@ -1,0 +1,553 @@
+iewt/dbservice-skeleton.py:1:1: F403 'from flask import *' used; unable to detect undefined names
+iewt/dbservice-skeleton.py:3:4: E225 missing whitespace around operator
+iewt/dbservice-skeleton.py:3:5: F405 'Flask' may be undefined, or defined from star imports: flask
+iewt/dbservice-skeleton.py:5:1: E302 expected 2 blank lines, found 1
+iewt/dbservice-skeleton.py:7:5: E265 block comment should start with '# '
+iewt/dbservice-skeleton.py:10:1: E302 expected 2 blank lines, found 1
+iewt/dbservice-skeleton.py:12:5: E265 block comment should start with '# '
+iewt/dbservice-skeleton.py:15:1: E305 expected 2 blank lines after class or function definition, found 1
+iewt/dbservice-skeleton.py:15:12: E225 missing whitespace around operator
+iewt/iewt/__init__.py:2:1: F401 'iewt._version.__version__' imported but unused
+iewt/iewt/__init__.py:2:1: F401 'iewt._version.__version_info__' imported but unused
+iewt/iewt/handler.py:37:1: E265 block comment should start with '# '
+iewt/iewt/handler.py:38:10: E225 missing whitespace around operator
+iewt/iewt/handler.py:39:1: E265 block comment should start with '# '
+iewt/iewt/handler.py:40:1: E402 module level import not at top of file
+iewt/iewt/handler.py:41:1: E265 block comment should start with '# '
+iewt/iewt/handler.py:42:1: E402 module level import not at top of file
+iewt/iewt/handler.py:44:1: E302 expected 2 blank lines, found 1
+iewt/iewt/handler.py:46:11: E275 missing whitespace after keyword
+iewt/iewt/handler.py:46:26: E225 missing whitespace around operator
+iewt/iewt/handler.py:48:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:49:1: E302 expected 2 blank lines, found 1
+iewt/iewt/handler.py:337:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:432:5: E265 block comment should start with '# '
+iewt/iewt/handler.py:433:22: E231 missing whitespace after ','
+iewt/iewt/handler.py:436:15: E275 missing whitespace after keyword
+iewt/iewt/handler.py:436:59: E225 missing whitespace around operator
+iewt/iewt/handler.py:440:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:441:5: E265 block comment should start with '# '
+iewt/iewt/handler.py:442:24: E231 missing whitespace after ','
+iewt/iewt/handler.py:442:28: E231 missing whitespace after ','
+iewt/iewt/handler.py:445:25: E225 missing whitespace around operator
+iewt/iewt/handler.py:446:15: E275 missing whitespace after keyword
+iewt/iewt/handler.py:447:37: E225 missing whitespace around operator
+iewt/iewt/handler.py:449:37: E225 missing whitespace around operator
+iewt/iewt/handler.py:451:33: E225 missing whitespace around operator
+iewt/iewt/handler.py:452:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:475:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:478:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:494:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:500:28: E231 missing whitespace after ','
+iewt/iewt/handler.py:502:42: E231 missing whitespace after ','
+iewt/iewt/handler.py:557:70: E231 missing whitespace after ','
+iewt/iewt/handler.py:557:80: E501 line too long (96 > 79 characters)
+iewt/iewt/handler.py:561:1: E302 expected 2 blank lines, found 1
+iewt/iewt/handler.py:566:9: E265 block comment should start with '# '
+iewt/iewt/handler.py:567:22: E225 missing whitespace around operator
+iewt/iewt/handler.py:568:9: E265 block comment should start with '# '
+iewt/iewt/handler.py:569:31: E225 missing whitespace around operator
+iewt/iewt/handler.py:592:17: E265 block comment should start with '# '
+iewt/iewt/handler.py:595:22: E225 missing whitespace around operator
+iewt/iewt/handler.py:596:22: E225 missing whitespace around operator
+iewt/iewt/handler.py:597:23: E275 missing whitespace after keyword
+iewt/iewt/handler.py:597:27: E225 missing whitespace around operator
+iewt/iewt/handler.py:598:47: E225 missing whitespace around operator
+iewt/iewt/handler.py:599:17: E722 do not use bare 'except'
+iewt/iewt/handler.py:635:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:638:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:639:13: E265 block comment should start with '# '
+iewt/iewt/handler.py:639:80: E501 line too long (84 > 79 characters)
+iewt/iewt/handler.py:640:15: E275 missing whitespace after keyword
+iewt/iewt/handler.py:640:20: E225 missing whitespace around operator
+iewt/iewt/handler.py:641:37: E225 missing whitespace around operator
+iewt/iewt/handler.py:645:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:646:9: E265 block comment should start with '# '
+iewt/iewt/handler.py:646:80: E501 line too long (96 > 79 characters)
+iewt/iewt/handler.py:649:13: E265 block comment should start with '# '
+iewt/iewt/handler.py:649:80: E501 line too long (103 > 79 characters)
+iewt/iewt/handler.py:650:26: E225 missing whitespace around operator
+iewt/iewt/handler.py:651:13: E265 block comment should start with '# '
+iewt/iewt/handler.py:652:15: E275 missing whitespace after keyword
+iewt/iewt/handler.py:652:34: E225 missing whitespace around operator
+iewt/iewt/handler.py:652:45: E275 missing whitespace after keyword
+iewt/iewt/handler.py:653:19: E275 missing whitespace after keyword
+iewt/iewt/handler.py:653:73: E225 missing whitespace around operator
+iewt/iewt/handler.py:653:80: E501 line too long (143 > 79 characters)
+iewt/iewt/handler.py:653:103: E225 missing whitespace around operator
+iewt/iewt/handler.py:654:23: E275 missing whitespace after keyword
+iewt/iewt/handler.py:655:25: E265 block comment should start with '# '
+iewt/iewt/handler.py:658:37: E231 missing whitespace after ','
+iewt/iewt/handler.py:658:55: E231 missing whitespace after ','
+iewt/iewt/handler.py:658:73: E225 missing whitespace around operator
+iewt/iewt/handler.py:658:80: E501 line too long (98 > 79 characters)
+iewt/iewt/handler.py:659:21: E225 missing whitespace around operator
+iewt/iewt/handler.py:662:39: E225 missing whitespace around operator
+iewt/iewt/handler.py:663:13: E265 block comment should start with '# '
+iewt/iewt/handler.py:663:80: E501 line too long (82 > 79 characters)
+iewt/iewt/handler.py:664:17: E275 missing whitespace after keyword
+iewt/iewt/handler.py:664:36: E225 missing whitespace around operator
+iewt/iewt/handler.py:664:47: E275 missing whitespace after keyword
+iewt/iewt/handler.py:665:19: E275 missing whitespace after keyword
+iewt/iewt/handler.py:666:23: E275 missing whitespace after keyword
+iewt/iewt/handler.py:667:25: E265 block comment should start with '# '
+iewt/iewt/handler.py:670:37: E231 missing whitespace after ','
+iewt/iewt/handler.py:670:55: E231 missing whitespace after ','
+iewt/iewt/handler.py:670:73: E225 missing whitespace around operator
+iewt/iewt/handler.py:670:80: E501 line too long (93 > 79 characters)
+iewt/iewt/handler.py:672:21: E265 block comment should start with '# '
+iewt/iewt/handler.py:673:24: E225 missing whitespace around operator
+iewt/iewt/handler.py:674:24: E225 missing whitespace around operator
+iewt/iewt/handler.py:675:21: E265 block comment should start with '# '
+iewt/iewt/handler.py:676:23: E225 missing whitespace around operator
+iewt/iewt/handler.py:676:80: E501 line too long (127 > 79 characters)
+iewt/iewt/handler.py:676:95: E231 missing whitespace after ','
+iewt/iewt/handler.py:678:23: E275 missing whitespace after keyword
+iewt/iewt/handler.py:678:31: E225 missing whitespace around operator
+iewt/iewt/handler.py:678:53: E225 missing whitespace around operator
+iewt/iewt/handler.py:679:47: E225 missing whitespace around operator
+iewt/iewt/handler.py:680:27: E275 missing whitespace after keyword
+iewt/iewt/handler.py:681:29: E265 block comment should start with '# '
+iewt/iewt/handler.py:684:27: E275 missing whitespace after keyword
+iewt/iewt/handler.py:685:29: E265 block comment should start with '# '
+iewt/iewt/handler.py:687:45: E225 missing whitespace around operator
+iewt/iewt/handler.py:691:41: E225 missing whitespace around operator
+iewt/iewt/handler.py:692:23: E275 missing whitespace after keyword
+iewt/iewt/handler.py:693:25: E265 block comment should start with '# '
+iewt/iewt/handler.py:696:13: E265 block comment should start with '# '
+iewt/iewt/handler.py:696:80: E501 line too long (97 > 79 characters)
+iewt/iewt/handler.py:698:17: E265 block comment should start with '# '
+iewt/iewt/handler.py:698:80: E501 line too long (88 > 79 characters)
+iewt/iewt/handler.py:699:19: E275 missing whitespace after keyword
+iewt/iewt/handler.py:699:24: E225 missing whitespace around operator
+iewt/iewt/handler.py:700:41: E225 missing whitespace around operator
+iewt/iewt/handler.py:703:19: E275 missing whitespace after keyword
+iewt/iewt/handler.py:704:21: E265 block comment should start with '# '
+iewt/iewt/handler.py:706:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:707:9: E265 block comment should start with '# '
+iewt/iewt/handler.py:710:26: E225 missing whitespace around operator
+iewt/iewt/handler.py:711:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:712:9: E265 block comment should start with '# '
+iewt/iewt/handler.py:713:9: E265 block comment should start with '# '
+iewt/iewt/handler.py:713:80: E501 line too long (87 > 79 characters)
+iewt/iewt/handler.py:716:33: E225 missing whitespace around operator
+iewt/iewt/handler.py:717:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:718:9: E265 block comment should start with '# '
+iewt/iewt/handler.py:718:80: E501 line too long (108 > 79 characters)
+iewt/iewt/handler.py:719:9: E265 block comment should start with '# '
+iewt/iewt/handler.py:719:80: E501 line too long (100 > 79 characters)
+iewt/iewt/handler.py:722:17: E225 missing whitespace around operator
+iewt/iewt/handler.py:725:1: W293 blank line contains whitespace
+iewt/iewt/handler.py:734:1: E265 block comment should start with '# '
+iewt/iewt/handler.py:735:1: E302 expected 2 blank lines, found 1
+iewt/iewt/main.py:6:80: E501 line too long (81 > 79 characters)
+iewt/iewt/main.py:12:1: E265 block comment should start with '# '
+iewt/iewt/main.py:15:1: E302 expected 2 blank lines, found 1
+iewt/iewt/main.py:20:9: E265 block comment should start with '# '
+iewt/iewt/main.py:49:5: E265 block comment should start with '# '
+iewt/iewt/main.py:51:9: E265 block comment should start with '# '
+iewt/iewt/main.py:52:12: E225 missing whitespace around operator
+iewt/iewt/main.py:53:12: E225 missing whitespace around operator
+iewt/iewt/main.py:54:9: E265 block comment should start with '# '
+iewt/iewt/main.py:55:80: E501 line too long (88 > 79 characters)
+iewt/iewt/main.py:58:9: E265 block comment should start with '# '
+iewt/iewt/main.py:59:80: E501 line too long (108 > 79 characters)
+iewt/iewt/main.py:61:1: W293 blank line contains whitespace
+iewt/iewt/main.py:75:1: W391 blank line at end of file
+iewt/iewt/worker.py:12:1: E265 block comment should start with '# '
+iewt/iewt/worker.py:14:1: E265 block comment should start with '# '
+iewt/iewt/worker.py:16:1: E265 block comment should start with '# '
+iewt/iewt/worker.py:22:1: E302 expected 2 blank lines, found 1
+iewt/iewt/worker.py:54:9: E265 block comment should start with '# '
+iewt/iewt/worker.py:54:80: E501 line too long (85 > 79 characters)
+iewt/iewt/worker.py:55:9: E265 block comment should start with '# '
+iewt/iewt/worker.py:55:80: E501 line too long (87 > 79 characters)
+iewt/iewt/worker.py:56:27: E225 missing whitespace around operator
+iewt/iewt/worker.py:57:9: E265 block comment should start with '# '
+iewt/iewt/worker.py:58:22: E225 missing whitespace around operator
+iewt/iewt/worker.py:59:9: E265 block comment should start with '# '
+iewt/iewt/worker.py:60:27: E225 missing whitespace around operator
+iewt/iewt/worker.py:61:24: E225 missing whitespace around operator
+iewt/iewt/worker.py:62:29: E225 missing whitespace around operator
+iewt/iewt/worker.py:63:24: E225 missing whitespace around operator
+iewt/iewt/worker.py:72:1: W293 blank line contains whitespace
+iewt/iewt/worker.py:73:5: E265 block comment should start with '# '
+iewt/iewt/worker.py:73:80: E501 line too long (81 > 79 characters)
+iewt/iewt/worker.py:74:29: E231 missing whitespace after ','
+iewt/iewt/worker.py:75:23: E231 missing whitespace after ','
+iewt/iewt/worker.py:75:38: E231 missing whitespace after ','
+iewt/iewt/worker.py:75:42: E225 missing whitespace around operator
+iewt/iewt/worker.py:75:47: E231 missing whitespace after ','
+iewt/iewt/worker.py:75:52: E231 missing whitespace after ','
+iewt/iewt/worker.py:76:12: E225 missing whitespace around operator
+iewt/iewt/worker.py:76:59: E231 missing whitespace after ','
+iewt/iewt/worker.py:76:62: W291 trailing whitespace
+iewt/iewt/worker.py:77:11: E275 missing whitespace after keyword
+iewt/iewt/worker.py:78:20: E225 missing whitespace around operator
+iewt/iewt/worker.py:78:40: E231 missing whitespace after ','
+iewt/iewt/worker.py:79:19: E225 missing whitespace around operator
+iewt/iewt/worker.py:79:35: E231 missing whitespace after ','
+iewt/iewt/worker.py:80:18: E225 missing whitespace around operator
+iewt/iewt/worker.py:81:22: E225 missing whitespace around operator
+iewt/iewt/worker.py:82:23: E225 missing whitespace around operator
+iewt/iewt/worker.py:83:27: E225 missing whitespace around operator
+iewt/iewt/worker.py:84:22: E225 missing whitespace around operator
+iewt/iewt/worker.py:84:36: E231 missing whitespace after ','
+iewt/iewt/worker.py:85:27: E225 missing whitespace around operator
+iewt/iewt/worker.py:86:30: E231 missing whitespace after ','
+iewt/iewt/worker.py:87:1: W293 blank line contains whitespace
+iewt/iewt/worker.py:102:1: W293 blank line contains whitespace
+iewt/iewt/worker.py:107:13: E265 block comment should start with '# '
+iewt/iewt/worker.py:108:15: E275 missing whitespace after keyword
+iewt/iewt/worker.py:121:19: E275 missing whitespace after keyword
+iewt/iewt/worker.py:122:21: E265 block comment should start with '# '
+iewt/iewt/worker.py:123:35: E231 missing whitespace after ','
+iewt/iewt/worker.py:123:50: E225 missing whitespace around operator
+iewt/iewt/worker.py:123:80: E501 line too long (85 > 79 characters)
+iewt/iewt/worker.py:124:21: E265 block comment should start with '# '
+iewt/iewt/worker.py:125:23: E275 missing whitespace after keyword
+iewt/iewt/worker.py:126:25: E265 block comment should start with '# '
+iewt/iewt/worker.py:126:80: E501 line too long (96 > 79 characters)
+iewt/iewt/worker.py:127:38: E225 missing whitespace around operator
+iewt/iewt/worker.py:127:80: E501 line too long (126 > 79 characters)
+iewt/iewt/worker.py:127:125: E228 missing whitespace around modulo operator
+iewt/iewt/worker.py:128:44: E231 missing whitespace after ','
+iewt/iewt/worker.py:128:60: E231 missing whitespace after ','
+iewt/iewt/worker.py:128:79: E231 missing whitespace after ','
+iewt/iewt/worker.py:128:80: E501 line too long (159 > 79 characters)
+iewt/iewt/worker.py:128:94: E231 missing whitespace after ','
+iewt/iewt/worker.py:128:109: E231 missing whitespace after ','
+iewt/iewt/worker.py:130:25: E265 block comment should start with '# '
+iewt/iewt/worker.py:131:43: E225 missing whitespace around operator
+iewt/iewt/worker.py:160:1: W293 blank line contains whitespace
+iewt/iewt/worker.py:161:1: W293 blank line contains whitespace
+iewt/iewt/worker.py:162:5: E303 too many blank lines (2)
+iewt/iewt/worker.py:163:1: W293 blank line contains whitespace
+iewt/iewt/worker.py:164:9: E265 block comment should start with '# '
+iewt/iewt/worker.py:164:80: E501 line too long (104 > 79 characters)
+iewt/iewt/worker.py:165:11: E275 missing whitespace after keyword
+iewt/iewt/worker.py:167:17: E265 block comment should start with '# '
+iewt/iewt/worker.py:168:20: E225 missing whitespace around operator
+iewt/iewt/worker.py:169:20: E225 missing whitespace around operator
+iewt/iewt/worker.py:170:17: E265 block comment should start with '# '
+iewt/iewt/worker.py:171:19: E225 missing whitespace around operator
+iewt/iewt/worker.py:171:80: E501 line too long (110 > 79 characters)
+iewt/iewt/worker.py:171:91: E231 missing whitespace after ','
+iewt/iewt/worker.py:172:17: E265 block comment should start with '# '
+iewt/iewt/worker.py:173:19: E275 missing whitespace after keyword
+iewt/iewt/worker.py:173:33: E225 missing whitespace around operator
+iewt/iewt/worker.py:174:76: E231 missing whitespace after ','
+iewt/iewt/worker.py:174:80: E501 line too long (115 > 79 characters)
+iewt/iewt/worker.py:174:93: E231 missing whitespace after ','
+iewt/iewt/worker.py:175:17: E265 block comment should start with '# '
+iewt/iewt/worker.py:177:80: E501 line too long (132 > 79 characters)
+iewt/iewt/worker.py:177:93: E231 missing whitespace after ','
+iewt/iewt/worker.py:177:115: E231 missing whitespace after ','
+iewt/iewt/worker.py:200:1: W293 blank line contains whitespace
+iewt/integration_tests/test_file_transfer.py:11:3: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:13:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_file_transfer.py:17:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_file_transfer.py:21:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_file_transfer.py:24:14: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:24:25: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:24:35: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:25:12: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:25:72: E228 missing whitespace around modulo operator
+iewt/integration_tests/test_file_transfer.py:28:80: E501 line too long (85 > 79 characters)
+iewt/integration_tests/test_file_transfer.py:29:18: E275 missing whitespace after keyword
+iewt/integration_tests/test_file_transfer.py:30:18: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:30:20: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:30:22: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:30:41: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:30:44: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:36:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_file_transfer.py:38:13: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:39:11: E275 missing whitespace after keyword
+iewt/integration_tests/test_file_transfer.py:40:14: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:40:31: E231 missing whitespace after ':'
+iewt/integration_tests/test_file_transfer.py:43:23: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:44:18: E275 missing whitespace after keyword
+iewt/integration_tests/test_file_transfer.py:45:18: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:45:20: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:45:22: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:45:41: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:45:44: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:46:25: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:47:19: E275 missing whitespace after keyword
+iewt/integration_tests/test_file_transfer.py:47:57: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:50:19: E275 missing whitespace after keyword
+iewt/integration_tests/test_file_transfer.py:51:25: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:53:27: E225 missing whitespace around operator
+iewt/integration_tests/test_file_transfer.py:53:52: E231 missing whitespace after ','
+iewt/integration_tests/test_file_transfer.py:54:27: E275 missing whitespace after keyword
+iewt/integration_tests/test_file_transfer.py:57:21: E722 do not use bare 'except'
+iewt/integration_tests/test_file_transfer.py:61:1: W293 blank line contains whitespace
+iewt/integration_tests/test_file_transfer.py:62:1: E305 expected 2 blank lines after class or function definition, found 1
+iewt/integration_tests/test_file_transfer.py:65:1: W391 blank line at end of file
+iewt/integration_tests/test_handler_worker.py:12:3: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:14:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_handler_worker.py:18:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_handler_worker.py:22:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_handler_worker.py:23:6: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:23:17: E231 missing whitespace after ':'
+iewt/integration_tests/test_handler_worker.py:27:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_handler_worker.py:30:14: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:30:25: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:30:35: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:31:12: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:31:72: E228 missing whitespace around modulo operator
+iewt/integration_tests/test_handler_worker.py:34:80: E501 line too long (85 > 79 characters)
+iewt/integration_tests/test_handler_worker.py:35:18: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:36:18: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:36:20: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:36:22: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:36:41: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:36:44: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:40:14: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:40:22: E231 missing whitespace after ':'
+iewt/integration_tests/test_handler_worker.py:45:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_handler_worker.py:47:80: E501 line too long (97 > 79 characters)
+iewt/integration_tests/test_handler_worker.py:48:19: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:49:14: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:50:14: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:50:16: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:50:18: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:50:37: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:50:40: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:51:21: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:52:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:52:53: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:55:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:57:22: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:58:23: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:58:35: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:63:17: E722 do not use bare 'except'
+iewt/integration_tests/test_handler_worker.py:65:1: W293 blank line contains whitespace
+iewt/integration_tests/test_handler_worker.py:67:80: E501 line too long (98 > 79 characters)
+iewt/integration_tests/test_handler_worker.py:68:19: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:69:14: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:70:14: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:70:16: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:70:18: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:70:37: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:70:40: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:71:21: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:72:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:72:53: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:75:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:77:22: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:78:23: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:78:35: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:83:17: E722 do not use bare 'except'
+iewt/integration_tests/test_handler_worker.py:85:1: W293 blank line contains whitespace
+iewt/integration_tests/test_handler_worker.py:88:19: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:89:14: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:90:14: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:90:16: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:90:18: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:90:37: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:90:40: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:91:21: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:92:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:92:53: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:95:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:96:21: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:98:23: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:98:48: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:99:23: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:102:17: E722 do not use bare 'except'
+iewt/integration_tests/test_handler_worker.py:104:1: W293 blank line contains whitespace
+iewt/integration_tests/test_handler_worker.py:106:80: E501 line too long (92 > 79 characters)
+iewt/integration_tests/test_handler_worker.py:107:19: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:108:14: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:109:14: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:109:16: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:109:18: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:109:37: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:109:40: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:110:21: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:111:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:111:53: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:114:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:115:21: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:117:23: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:117:50: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:118:23: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:121:17: E722 do not use bare 'except'
+iewt/integration_tests/test_handler_worker.py:123:1: W293 blank line contains whitespace
+iewt/integration_tests/test_handler_worker.py:126:12: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:127:12: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:128:64: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:128:78: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:128:80: E501 line too long (95 > 79 characters)
+iewt/integration_tests/test_handler_worker.py:131:19: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:132:14: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:133:14: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:133:16: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:133:18: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:133:37: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:133:40: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:134:21: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:135:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:135:53: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:138:15: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:139:21: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:141:23: E225 missing whitespace around operator
+iewt/integration_tests/test_handler_worker.py:141:50: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:142:23: E275 missing whitespace after keyword
+iewt/integration_tests/test_handler_worker.py:143:24: E111 indentation is not a multiple of 4
+iewt/integration_tests/test_handler_worker.py:144:24: E111 indentation is not a multiple of 4
+iewt/integration_tests/test_handler_worker.py:144:80: E501 line too long (101 > 79 characters)
+iewt/integration_tests/test_handler_worker.py:144:85: E231 missing whitespace after ','
+iewt/integration_tests/test_handler_worker.py:145:24: E111 indentation is not a multiple of 4
+iewt/integration_tests/test_handler_worker.py:146:24: E111 indentation is not a multiple of 4
+iewt/integration_tests/test_handler_worker.py:147:24: E111 indentation is not a multiple of 4
+iewt/integration_tests/test_handler_worker.py:148:17: E722 do not use bare 'except'
+iewt/integration_tests/test_handler_worker.py:150:1: W293 blank line contains whitespace
+iewt/integration_tests/test_handler_worker.py:151:1: E305 expected 2 blank lines after class or function definition, found 1
+iewt/integration_tests/test_handler_worker.py:153:1: W391 blank line at end of file
+iewt/integration_tests/test_main.py:5:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_main.py:7:12: E225 missing whitespace around operator
+iewt/integration_tests/test_main.py:9:5: F841 local variable 'e' is assigned to but never used
+iewt/integration_tests/test_main.py:12:1: E302 expected 2 blank lines, found 1
+iewt/integration_tests/test_main.py:15:11: E275 missing whitespace after keyword
+iewt/integration_tests/test_main.py:22:11: E275 missing whitespace after keyword
+iewt/integration_tests/test_main.py:26:1: E305 expected 2 blank lines after class or function definition, found 1
+iewt/load_test/load_testing.py:4:1: F401 'select' imported but unused
+iewt/load_test/load_testing.py:6:1: F401 'time' imported but unused
+iewt/load_test/load_testing.py:10:8: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:12:1: E302 expected 2 blank lines, found 1
+iewt/load_test/load_testing.py:13:6: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:13:17: E231 missing whitespace after ':'
+iewt/load_test/load_testing.py:17:1: E302 expected 2 blank lines, found 1
+iewt/load_test/load_testing.py:20:10: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:20:12: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:20:14: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:20:25: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:20:35: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:21:12: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:21:80: E501 line too long (88 > 79 characters)
+iewt/load_test/load_testing.py:21:84: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:21:86: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:24:80: E501 line too long (85 > 79 characters)
+iewt/load_test/load_testing.py:29:1: E303 too many blank lines (3)
+iewt/load_test/load_testing.py:30:4: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:33:12: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:34:10: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:37:2: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:38:14: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:44:22: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:45:22: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:45:34: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:45:38: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:45:43: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:46:11: E275 missing whitespace after keyword
+iewt/load_test/load_testing.py:46:13: E228 missing whitespace around modulo operator
+iewt/load_test/load_testing.py:46:17: E225 missing whitespace around operator
+iewt/load_test/load_testing.py:47:29: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:47:56: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:47:64: E231 missing whitespace after ','
+iewt/load_test/load_testing.py:47:80: E501 line too long (111 > 79 characters)
+iewt/load_test/load_testing.py:51:39: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:6:1: F401 'time' imported but unused
+iewt/load_test/speed_test.py:12:3: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:13:1: E302 expected 2 blank lines, found 0
+iewt/load_test/speed_test.py:14:6: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:14:17: E231 missing whitespace after ':'
+iewt/load_test/speed_test.py:18:1: E302 expected 2 blank lines, found 1
+iewt/load_test/speed_test.py:21:10: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:21:12: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:21:14: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:21:25: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:21:35: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:22:12: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:22:80: E501 line too long (88 > 79 characters)
+iewt/load_test/speed_test.py:22:84: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:22:86: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:25:80: E501 line too long (85 > 79 characters)
+iewt/load_test/speed_test.py:26:18: E275 missing whitespace after keyword
+iewt/load_test/speed_test.py:27:18: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:27:20: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:27:22: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:27:41: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:27:44: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:31:36: W291 trailing whitespace
+iewt/load_test/speed_test.py:33:4: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:34:5: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:36:10: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:37:80: E501 line too long (111 > 79 characters)
+iewt/load_test/speed_test.py:38:14: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:39:10: E275 missing whitespace after keyword
+iewt/load_test/speed_test.py:40:10: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:40:12: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:40:14: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:40:33: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:40:36: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:41:11: E275 missing whitespace after keyword
+iewt/load_test/speed_test.py:42:17: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:43:16: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:45:18: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:49:13: E722 do not use bare 'except'
+iewt/load_test/speed_test.py:52:44: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:53:21: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:54:43: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:56:4: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:57:5: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:59:10: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:61:14: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:62:10: E275 missing whitespace after keyword
+iewt/load_test/speed_test.py:63:10: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:63:12: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:63:14: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:63:33: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:63:36: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:64:11: E275 missing whitespace after keyword
+iewt/load_test/speed_test.py:65:17: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:66:16: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:68:19: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:68:38: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:69:19: E275 missing whitespace after keyword
+iewt/load_test/speed_test.py:73:13: E722 do not use bare 'except'
+iewt/load_test/speed_test.py:76:39: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:77:21: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:78:43: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:81:36: W291 trailing whitespace
+iewt/load_test/speed_test.py:82:5: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:83:6: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:84:6: E275 missing whitespace after keyword
+iewt/load_test/speed_test.py:85:11: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:87:14: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:89:12: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:91:11: E275 missing whitespace after keyword
+iewt/load_test/speed_test.py:91:21: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:96:5: E722 do not use bare 'except'
+iewt/load_test/speed_test.py:97:14: E225 missing whitespace around operator
+iewt/load_test/speed_test.py:99:1: W293 blank line contains whitespace
+iewt/load_test/speed_test.py:100:12: E231 missing whitespace after ','
+iewt/load_test/speed_test.py:103:1: W293 blank line contains whitespace
+iewt/load_test/speed_test.py:105:1: W391 blank line at end of file
+iewt/tests/sshserver.py:38:56: E231 missing whitespace after ','
+iewt/tests/sshserver.py:216:1: W391 blank line at end of file
+iewt/tests/test_handler.py:9:1: F401 'iewt.worker' imported but unused
+iewt/tests/test_handler.py:11:80: E501 line too long (86 > 79 characters)
+iewt/tests/test_handler.py:320:1: E302 expected 2 blank lines, found 1
+iewt/tests/test_handler.py:340:1: W391 blank line at end of file
+5     E111 indentation is not a multiple of 4
+154   E225 missing whitespace around operator
+4     E228 missing whitespace around modulo operator
+121   E231 missing whitespace after ','
+55    E265 block comment should start with '# '
+63    E275 missing whitespace after keyword
+24    E302 expected 2 blank lines, found 1
+2     E303 too many blank lines (2)
+4     E305 expected 2 blank lines after class or function definition, found 1
+2     E402 module level import not at top of file
+42    E501 line too long (96 > 79 characters)
+10    E722 do not use bare 'except'
+6     F401 'iewt._version.__version__' imported but unused
+1     F403 'from flask import *' used; unable to detect undefined names
+1     F405 'Flask' may be undefined, or defined from star imports: flask
+1     F841 local variable 'e' is assigned to but never used
+3     W291 trailing whitespace
+30    W293 blank line contains whitespace
+6     W391 blank line at end of file
