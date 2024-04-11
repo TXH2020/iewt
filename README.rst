@@ -38,6 +38,10 @@ Code Coverage:
 - coverage run -m unittest discover tests
 - coverage report -m > coverage_report.txt
 
+Flake8 report:
+-----------------
+- flake8 iewt --statistics > flake_report.txt
+
 Docker Image:
 ------------------
 
